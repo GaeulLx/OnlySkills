@@ -1,0 +1,1118 @@
+{
+  "version": "6",
+  "dialect": "sqlite",
+  "id": "06b4c3df-3efe-4e6a-9e36-1c827949dfb8",
+  "prevId": "91cfa624-a754-41ac-b1e3-5cf5b15b8a5c",
+  "tables": {
+    "bookkeeping_accounts": {
+      "name": "bookkeeping_accounts",
+      "columns": {
+        "device_id": {
+          "name": "device_id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "capability_hash": {
+          "name": "capability_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "bookkeeping_accounts_hash_check": {
+          "name": "bookkeeping_accounts_hash_check",
+          "value": "length(\"bookkeeping_accounts\".\"capability_hash\") = 64"
+        }
+      }
+    },
+    "bookkeeping_entries": {
+      "name": "bookkeeping_entries",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "scope_key": {
+          "name": "scope_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "owner_device": {
+          "name": "owner_device",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "kind": {
+          "name": "kind",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "entry_date": {
+          "name": "entry_date",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "merchant": {
+          "name": "merchant",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "amount_minor": {
+          "name": "amount_minor",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "currency": {
+          "name": "currency",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "category": {
+          "name": "category",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "note": {
+          "name": "note",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "''"
+        },
+        "ocr_text": {
+          "name": "ocr_text",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "''"
+        },
+        "payload_hash": {
+          "name": "payload_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "receipt_key": {
+          "name": "receipt_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "receipt_name": {
+          "name": "receipt_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "receipt_type": {
+          "name": "receipt_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "receipt_size": {
+          "name": "receipt_size",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'posted'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "voided_at": {
+          "name": "voided_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "bookkeeping_entries_scope_date_idx": {
+          "name": "bookkeeping_entries_scope_date_idx",
+          "columns": [
+            "scope_key",
+            "entry_date",
+            "created_at",
+            "id"
+          ],
+          "isUnique": false
+        },
+        "bookkeeping_entries_scope_status_currency_idx": {
+          "name": "bookkeeping_entries_scope_status_currency_idx",
+          "columns": [
+            "scope_key",
+            "status",
+            "currency"
+          ],
+          "isUnique": false
+        },
+        "bookkeeping_entries_owner_idx": {
+          "name": "bookkeeping_entries_owner_idx",
+          "columns": [
+            "owner_device",
+            "created_at"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "bookkeeping_entries_owner_device_bookkeeping_accounts_device_id_fk": {
+          "name": "bookkeeping_entries_owner_device_bookkeeping_accounts_device_id_fk",
+          "tableFrom": "bookkeeping_entries",
+          "tableTo": "bookkeeping_accounts",
+          "columnsFrom": [
+            "owner_device"
+          ],
+          "columnsTo": [
+            "device_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "bookkeeping_entries_kind_check": {
+          "name": "bookkeeping_entries_kind_check",
+          "value": "\"bookkeeping_entries\".\"kind\" in ('income', 'expense')"
+        },
+        "bookkeeping_entries_amount_check": {
+          "name": "bookkeeping_entries_amount_check",
+          "value": "\"bookkeeping_entries\".\"amount_minor\" between 1 and 9999999999"
+        },
+        "bookkeeping_entries_currency_check": {
+          "name": "bookkeeping_entries_currency_check",
+          "value": "\"bookkeeping_entries\".\"currency\" in ('MYR', 'SGD', 'USD', 'EUR', 'GBP')"
+        },
+        "bookkeeping_entries_category_check": {
+          "name": "bookkeeping_entries_category_check",
+          "value": "\"bookkeeping_entries\".\"category\" in ('Materials', 'Packaging', 'Marketing', 'Transport', 'Sales', 'Other')"
+        },
+        "bookkeeping_entries_status_check": {
+          "name": "bookkeeping_entries_status_check",
+          "value": "\"bookkeeping_entries\".\"status\" in ('posted', 'void')"
+        },
+        "bookkeeping_entries_void_check": {
+          "name": "bookkeeping_entries_void_check",
+          "value": "(\"bookkeeping_entries\".\"status\" = 'posted' and \"bookkeeping_entries\".\"voided_at\" is null) or (\"bookkeeping_entries\".\"status\" = 'void' and \"bookkeeping_entries\".\"voided_at\" is not null)"
+        },
+        "bookkeeping_entries_merchant_check": {
+          "name": "bookkeeping_entries_merchant_check",
+          "value": "length(\"bookkeeping_entries\".\"merchant\") between 1 and 120"
+        },
+        "bookkeeping_entries_note_check": {
+          "name": "bookkeeping_entries_note_check",
+          "value": "length(\"bookkeeping_entries\".\"note\") <= 500"
+        },
+        "bookkeeping_entries_ocr_check": {
+          "name": "bookkeeping_entries_ocr_check",
+          "value": "length(\"bookkeeping_entries\".\"ocr_text\") <= 20000"
+        },
+        "bookkeeping_entries_payload_check": {
+          "name": "bookkeeping_entries_payload_check",
+          "value": "length(\"bookkeeping_entries\".\"payload_hash\") = 64"
+        },
+        "bookkeeping_entries_receipt_check": {
+          "name": "bookkeeping_entries_receipt_check",
+          "value": "(\"bookkeeping_entries\".\"receipt_key\" is null and \"bookkeeping_entries\".\"receipt_name\" is null and \"bookkeeping_entries\".\"receipt_type\" is null and \"bookkeeping_entries\".\"receipt_size\" is null) or (\"bookkeeping_entries\".\"receipt_key\" is not null and \"bookkeeping_entries\".\"receipt_name\" is not null and \"bookkeeping_entries\".\"receipt_type\" in ('image/jpeg', 'image/png', 'image/webp', 'application/pdf') and \"bookkeeping_entries\".\"receipt_size\" between 1 and 8388608)"
+        }
+      }
+    },
+    "demo_group_messages": {
+      "name": "demo_group_messages",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "group_id": {
+          "name": "group_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "device_id": {
+          "name": "device_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "body": {
+          "name": "body",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "demo_group_messages_group_time_idx": {
+          "name": "demo_group_messages_group_time_idx",
+          "columns": [
+            "group_id",
+            "created_at",
+            "id"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "demo_group_messages_body_check": {
+          "name": "demo_group_messages_body_check",
+          "value": "length(\"demo_group_messages\".\"body\") between 1 and 1000"
+        }
+      }
+    },
+    "demo_members": {
+      "name": "demo_members",
+      "columns": {
+        "role": {
+          "name": "role",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "device_id": {
+          "name": "device_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "display_name": {
+          "name": "display_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "product_name": {
+          "name": "product_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "''"
+        },
+        "joined_at": {
+          "name": "joined_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "group_id": {
+          "name": "group_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "''"
+        }
+      },
+      "indexes": {
+        "demo_members_device_id_unique": {
+          "name": "demo_members_device_id_unique",
+          "columns": [
+            "device_id"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "matching_messages": {
+      "name": "matching_messages",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "team_id": {
+          "name": "team_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "body": {
+          "name": "body",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "matching_messages_team_time_idx": {
+          "name": "matching_messages_team_time_idx",
+          "columns": [
+            "team_id",
+            "created_at",
+            "id"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "matching_messages_team_id_matching_teams_id_fk": {
+          "name": "matching_messages_team_id_matching_teams_id_fk",
+          "tableFrom": "matching_messages",
+          "tableTo": "matching_teams",
+          "columnsFrom": [
+            "team_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "matching_messages_user_id_matching_profiles_user_id_fk": {
+          "name": "matching_messages_user_id_matching_profiles_user_id_fk",
+          "tableFrom": "matching_messages",
+          "tableTo": "matching_profiles",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "user_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "matching_messages_body_check": {
+          "name": "matching_messages_body_check",
+          "value": "length(\"matching_messages\".\"body\") between 1 and 1000"
+        }
+      }
+    },
+    "matching_profiles": {
+      "name": "matching_profiles",
+      "columns": {
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "role": {
+          "name": "role",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "display_name": {
+          "name": "display_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "skills": {
+          "name": "skills",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "interests": {
+          "name": "interests",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "business_goal": {
+          "name": "business_goal",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "availability_hours": {
+          "name": "availability_hours",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "availability_slots": {
+          "name": "availability_slots",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "match_opt_in": {
+          "name": "match_opt_in",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 1
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "matching_profiles_pool_idx": {
+          "name": "matching_profiles_pool_idx",
+          "columns": [
+            "role",
+            "match_opt_in",
+            "updated_at"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "matching_profiles_role_check": {
+          "name": "matching_profiles_role_check",
+          "value": "\"matching_profiles\".\"role\" in ('Product Creator', 'Marketing', 'Sales')"
+        },
+        "matching_profiles_hours_check": {
+          "name": "matching_profiles_hours_check",
+          "value": "\"matching_profiles\".\"availability_hours\" between 1 and 80"
+        }
+      }
+    },
+    "matching_task_steps": {
+      "name": "matching_task_steps",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "task_id": {
+          "name": "task_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "step_key": {
+          "name": "step_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "sort_order": {
+          "name": "sort_order",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "detail": {
+          "name": "detail",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "completion_output": {
+          "name": "completion_output",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "estimated_minutes": {
+          "name": "estimated_minutes",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "completed": {
+          "name": "completed",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "matching_task_steps_task_key_unique": {
+          "name": "matching_task_steps_task_key_unique",
+          "columns": [
+            "task_id",
+            "step_key"
+          ],
+          "isUnique": true
+        },
+        "matching_task_steps_task_order_idx": {
+          "name": "matching_task_steps_task_order_idx",
+          "columns": [
+            "task_id",
+            "sort_order"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "matching_task_steps_task_id_matching_tasks_id_fk": {
+          "name": "matching_task_steps_task_id_matching_tasks_id_fk",
+          "tableFrom": "matching_task_steps",
+          "tableTo": "matching_tasks",
+          "columnsFrom": [
+            "task_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "matching_task_steps_completed_check": {
+          "name": "matching_task_steps_completed_check",
+          "value": "\"matching_task_steps\".\"completed\" in (0, 1)"
+        },
+        "matching_task_steps_order_check": {
+          "name": "matching_task_steps_order_check",
+          "value": "\"matching_task_steps\".\"sort_order\" between 1 and 100"
+        },
+        "matching_task_steps_minutes_check": {
+          "name": "matching_task_steps_minutes_check",
+          "value": "\"matching_task_steps\".\"estimated_minutes\" between 1 and 240"
+        }
+      }
+    },
+    "matching_tasks": {
+      "name": "matching_tasks",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "team_id": {
+          "name": "team_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "role": {
+          "name": "role",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "task_key": {
+          "name": "task_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "detail": {
+          "name": "detail",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "completed": {
+          "name": "completed",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "matching_tasks_team_user_key_unique": {
+          "name": "matching_tasks_team_user_key_unique",
+          "columns": [
+            "team_id",
+            "user_id",
+            "task_key"
+          ],
+          "isUnique": true
+        },
+        "matching_tasks_team_idx": {
+          "name": "matching_tasks_team_idx",
+          "columns": [
+            "team_id",
+            "completed"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "matching_tasks_team_id_matching_teams_id_fk": {
+          "name": "matching_tasks_team_id_matching_teams_id_fk",
+          "tableFrom": "matching_tasks",
+          "tableTo": "matching_teams",
+          "columnsFrom": [
+            "team_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "matching_tasks_user_id_matching_profiles_user_id_fk": {
+          "name": "matching_tasks_user_id_matching_profiles_user_id_fk",
+          "tableFrom": "matching_tasks",
+          "tableTo": "matching_profiles",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "user_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "matching_tasks_completed_check": {
+          "name": "matching_tasks_completed_check",
+          "value": "\"matching_tasks\".\"completed\" in (0, 1)"
+        }
+      }
+    },
+    "matching_team_members": {
+      "name": "matching_team_members",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "team_id": {
+          "name": "team_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "role": {
+          "name": "role",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'invited'"
+        },
+        "invited_at": {
+          "name": "invited_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "responded_at": {
+          "name": "responded_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "matching_team_members_team_user_unique": {
+          "name": "matching_team_members_team_user_unique",
+          "columns": [
+            "team_id",
+            "user_id"
+          ],
+          "isUnique": true
+        },
+        "matching_team_members_reserved_user_unique": {
+          "name": "matching_team_members_reserved_user_unique",
+          "columns": [
+            "user_id"
+          ],
+          "isUnique": true,
+          "where": "\"matching_team_members\".\"status\" in ('invited', 'accepted')"
+        },
+        "matching_team_members_reserved_role_unique": {
+          "name": "matching_team_members_reserved_role_unique",
+          "columns": [
+            "team_id",
+            "role"
+          ],
+          "isUnique": true,
+          "where": "\"matching_team_members\".\"status\" in ('invited', 'accepted')"
+        },
+        "matching_team_members_team_status_idx": {
+          "name": "matching_team_members_team_status_idx",
+          "columns": [
+            "team_id",
+            "status"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "matching_team_members_team_id_matching_teams_id_fk": {
+          "name": "matching_team_members_team_id_matching_teams_id_fk",
+          "tableFrom": "matching_team_members",
+          "tableTo": "matching_teams",
+          "columnsFrom": [
+            "team_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "matching_team_members_user_id_matching_profiles_user_id_fk": {
+          "name": "matching_team_members_user_id_matching_profiles_user_id_fk",
+          "tableFrom": "matching_team_members",
+          "tableTo": "matching_profiles",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "user_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "matching_team_members_role_check": {
+          "name": "matching_team_members_role_check",
+          "value": "\"matching_team_members\".\"role\" in ('Product Creator', 'Marketing', 'Sales')"
+        },
+        "matching_team_members_status_check": {
+          "name": "matching_team_members_status_check",
+          "value": "\"matching_team_members\".\"status\" in ('invited', 'accepted', 'rejected', 'cancelled')"
+        }
+      }
+    },
+    "matching_teams": {
+      "name": "matching_teams",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'forming'"
+        },
+        "match_score": {
+          "name": "match_score",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "score_breakdown": {
+          "name": "score_breakdown",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "accepted_count": {
+          "name": "accepted_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "accepted_product_creator": {
+          "name": "accepted_product_creator",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "accepted_marketing": {
+          "name": "accepted_marketing",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "accepted_sales": {
+          "name": "accepted_sales",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "activated_at": {
+          "name": "activated_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "matching_teams_status_idx": {
+          "name": "matching_teams_status_idx",
+          "columns": [
+            "status",
+            "updated_at"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "matching_teams_status_check": {
+          "name": "matching_teams_status_check",
+          "value": "\"matching_teams\".\"status\" in ('forming', 'active', 'cancelled')"
+        },
+        "matching_teams_score_check": {
+          "name": "matching_teams_score_check",
+          "value": "\"matching_teams\".\"match_score\" between 0 and 100"
+        },
+        "matching_teams_accepted_count_check": {
+          "name": "matching_teams_accepted_count_check",
+          "value": "\"matching_teams\".\"accepted_count\" between 0 and 3"
+        },
+        "matching_teams_accepted_flags_check": {
+          "name": "matching_teams_accepted_flags_check",
+          "value": "\"matching_teams\".\"accepted_product_creator\" in (0, 1) and \"matching_teams\".\"accepted_marketing\" in (0, 1) and \"matching_teams\".\"accepted_sales\" in (0, 1)"
+        },
+        "matching_teams_active_guard_check": {
+          "name": "matching_teams_active_guard_check",
+          "value": "\"matching_teams\".\"status\" != 'active' or (\"matching_teams\".\"accepted_count\" = 3 and \"matching_teams\".\"accepted_product_creator\" = 1 and \"matching_teams\".\"accepted_marketing\" = 1 and \"matching_teams\".\"accepted_sales\" = 1)"
+        }
+      }
+    }
+  },
+  "views": {},
+  "enums": {},
+  "_meta": {
+    "schemas": {},
+    "tables": {},
+    "columns": {}
+  },
+  "internal": {
+    "indexes": {}
+  }
+}

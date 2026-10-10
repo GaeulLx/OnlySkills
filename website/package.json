@@ -1,0 +1,19 @@
+{
+  "name": "onlyskill-demo",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@11.25.0",
+  "scripts": {
+    "db:generate": "drizzle-kit generate",
+    "build": "node scripts/build.mjs",
+    "validate": "node scripts/validate.mjs"
+  },
+  "dependencies": {
+    "pdfjs-dist": "5.5.207",
+    "tesseract.js": "7.0.0"
+  },
+  "devDependencies": {
+    "drizzle-kit": "0.31.10",
+    "drizzle-orm": "0.45.2"
+  }
+}

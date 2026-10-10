@@ -1,5 +1,7 @@
 # OnlySkills backend
 
+The current website source is in [`website/`](website/README.md). It is kept as a separate project so its Cloudflare Worker, D1 migrations, and frontend dependencies do not replace this backend's Express/MCP service.
+
 OnlySkills exposes a remote MCP server so **WorkBuddy is the primary agent and execution engine**. WorkBuddy Desktop can run a goal entered in its own screen, or act as a pre-started worker that claims a website-submitted goal from the OnlySkills queue. WorkBuddy plans the steps, calls OnlySkills tools for demo context and validated calculations, creates the cost spreadsheet and marketing document with WorkBuddy's own document tools, then asks OnlySkills to validate and save the structured results.
 
 CodeBuddy is not used by this workflow. The backend does not call a WorkBuddy model API; WorkBuddy connects outward to this MCP server over authenticated HTTPS.

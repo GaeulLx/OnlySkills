@@ -1,0 +1,4 @@
+ALTER TABLE `matching_teams` ADD COLUMN `accepted_product_creator` integer NOT NULL DEFAULT 0 CHECK (`accepted_product_creator` IN (0, 1));--> statement-breakpoint
+ALTER TABLE `matching_teams` ADD COLUMN `accepted_marketing` integer NOT NULL DEFAULT 0 CHECK (`accepted_marketing` IN (0, 1));--> statement-breakpoint
+ALTER TABLE `matching_teams` ADD COLUMN `accepted_sales` integer NOT NULL DEFAULT 0 CHECK (`accepted_sales` IN (0, 1));--> statement-breakpoint
+ALTER TABLE `matching_teams` ADD COLUMN `accepted_count` integer NOT NULL DEFAULT 0 CONSTRAINT `matching_teams_accepted_count_check` CHECK (`accepted_count` BETWEEN 0 AND 3) CONSTRAINT `matching_teams_active_guard_check` CHECK (`status` != 'active' OR (`accepted_count` = 3 AND `accepted_product_creator` = 1 AND `accepted_marketing` = 1 AND `accepted_sales` = 1));
