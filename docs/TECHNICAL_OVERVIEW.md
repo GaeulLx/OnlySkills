@@ -1,17 +1,19 @@
-# OnlySkills backend: demo explanation
+# OnlySkills technical overview
 
-The Node.js/Express API defaults `POST /api/goal` to the CodeBuddy Agent SDK for Business Analyst output. Growth, Team Builder, Operations, and Feedback use deterministic agent logic. The SDK is restricted to text analysis and denies tool requests. If CodeBuddy fails, the response identifies `mock_fallback`. An optional `provider: "openai"` runs all five through the OpenAI Responses API; `OPENAI_API_KEY` stays on the backend. An explicit `provider: "mock"` selects deterministic demo results. The API returns an approval-required recommendation. `GET /api/status` and `GET /api/results` let the frontend display progress and output. `POST /api/approve` records an explicit human decision; it does not execute outside actions.
+OnlySkills connects WorkBuddy to an authenticated remote MCP server hosted with the Node.js/Express backend. WorkBuddy receives the user's goal, plans the multi-step workflow, generates the five agent deliverables, and uses its native document tools to create a cost spreadsheet and marketing plan. It then calls MCP tools to retrieve synthetic context, obtain authoritative business calculations, validate the final results, and persist a run. Firebase/Firestore stores runs when configured; memory mode is available for local demos.
 
-The mock Business Analyst follows the reconciled workbook's illustrative MYR base case: 20 bottles purchased, one retained as a demo, 19 maximum saleable, MYR 12 product cost, MYR 1 packing, MYR 20 draft price, 2% plus MYR 0.10 illustrative payment fees, MYR 80 marketing, MYR 20 printing, MYR 40 pickup setup, and MYR 90 held contingency. The modeled allocation is MYR 499.50 against a MYR 500 cap. Operating contribution break-even is 24 sales, and the full-reserve cash recovery hurdle is 26 sales; both exceed the 19-unit saleable ceiling. These are planning assumptions and sell-out sensitivities, not verified quotes, purchase approval, or a demand forecast. The budget input is compared against the fixed base case; estimated affordable stock is not a sales forecast.
+The five roles are Business Analyst, Growth, Team Builder, Operations, and Feedback. Backend validation checks budget allocation, saleable stock, break-even figures, mock campaign KPIs, required output structure, and the approval gate. Artifact names and locations are recorded from WorkBuddy; the backend does not independently inspect WorkBuddy's files. Recommendation approval is recorded only and does not trigger purchases, messages, or other outside actions.
 
-Persistence uses Firebase Admin/Cloud Firestore when the backend has server-side credentials; otherwise it falls back to in-memory storage for quick local development. Never put Firebase Admin credentials in frontend code. The mock sales rows and student profiles are demo data and are not real users or transactions.
+## Demo assumptions and limitations
 
-CodeBuddy SDK and Tencent Docs are separate integrations. SDK support is documented, but hackathon account entitlement and credentials need confirmation. The SDK adapter denies all tool calls and requests text analysis only. Tencent Docs create/read/write APIs need separate credentials and permissions and are not yet called by this backend. WorkBuddy website artifacts are still created manually.
+The sample business case is illustrative: 20 bottles purchased, one retained for demonstration, 19 maximum saleable, and modeled allocation of MYR 499.50 against a MYR 500 cap. Operating break-even is 24 sales and the full-reserve cash recovery hurdle is 26 sales, both above the saleable quantity. These figures are planning assumptions, not verified supplier quotes, purchase approval, or a demand forecast.
+
+The 20 sales rows and three student creator profiles are synthetic. The MCP server labels them as mock data and does not claim that they represent actual orders or people. Firestore is active only when the health endpoint reports `persistence: "firebase"`; memory storage resets when the backend process restarts.
 
 ## Honest demo claims
 
-- The end-to-end goal → structured results → recommendation → approval loop works locally.
-- If the user supplies no campaign metrics or student profiles, generated Operations results report no measured activity and Team Builder suggests roles without inventing actual people.
-- Successful CodeBuddy Business Analyst output reports `provider: "codebuddy"`; failure fallback reports `provider: "mock_fallback"`. Explicit mock and OpenAI modes report their selected provider.
-- Firebase persistence is active only when `/api/health` reports `firebase`.
-- Tencent Docs documents are not created by this backend.
+- WorkBuddy is the primary planner and content-generating agent in the MCP-connected demonstration.
+- WorkBuddy creates the two deliverables with its own native document tools; the backend records references and validates the structured results.
+- The backend supplies deterministic business calculations and validates outputs against synthetic data.
+- CodeBuddy and OpenAI are not backend providers. WorkBuddy is the only AI execution engine in the MCP-connected judging demonstration.
+- A recommendation waits for a human decision. Approval records the choice but does not execute external actions.

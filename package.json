@@ -2,7 +2,7 @@
   "name": "onlyskills-backend",
   "version": "1.0.0",
   "private": true,
-  "description": "OnlySkills hackathon backend with deterministic agent workflow and optional Firebase persistence",
+  "description": "OnlySkills backend with WorkBuddy remote MCP tools and optional Firebase persistence",
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
@@ -12,13 +12,11 @@
     "node": ">=22"
   },
   "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.1",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "firebase-admin": "^13.0.2",
-    "openai": "^7.32.0"
-  },
-  "optionalDependencies": {
-    "@tencent-ai/agent-sdk": "^0.3.272"
+    "zod": "^4.6.5"
   }
 }

@@ -174,4 +174,4 @@ function runAgents(input) {
   };
 }
 
-module.exports = { runAgents };
+module.exports = { runAgents, businessAnalyst, operations };
