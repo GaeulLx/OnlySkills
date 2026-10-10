@@ -1,0 +1,55 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1791619233933,
+      "tag": "0000_amazing_randall_flagg",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1791633881035,
+      "tag": "0001_brave_red_skull",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1791635274638,
+      "tag": "0002_last_scourge",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1791637923012,
+      "tag": "0003_light_celestials",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1791638534577,
+      "tag": "0004_adorable_vampiro",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1791640619081,
+      "tag": "0005_omniscient_mordo",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1791642288101,
+      "tag": "0006_organic_maria_hill",
+      "breakpoints": true
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+import assert from "node:assert/strict";
+import { clampMapNode, mapConnector, constellationSearchState } from "../worker/constellation-ui.js";
+
+const inside = clampMapNode({x:.4,y:.6}, 1000, 600, 150, 100);
+assert.deepEqual(inside, {x:.4,y:.6});
+const outside = clampMapNode({x:-5,y:9}, 300, 690, 145, 112);
+assert.ok(outside.x * 300 >= 145 / 2 + 8, "a dragged card cannot be lost outside the left edge");
+assert.ok(outside.y * 690 <= 690 - 112 / 2 - 8, "a dragged card cannot be lost below the map");
+assert.deepEqual(clampMapNode({x:NaN,y:Infinity}, 100, 100, 190, 112), {x:.5,y:.5}, "bad stored positions recover even when a card is wider than the map");
+const origin = {x:100,y:150,width:120,height:120};
+const before = mapConnector(origin, {x:450,y:300,width:190,height:110}, 1);
+const after = mapConnector(origin, {x:500,y:200,width:190,height:110}, 1);
+assert.notEqual(before, after, "connectors follow moved nodes");
+assert.doesNotMatch(mapConnector(origin, origin), /NaN|Infinity/, "overlapping node centers produce a safe path");
+assert.equal(constellationSearchState({}).scanning, false, "visitors must create a real profile before scanning");
+assert.equal(constellationSearchState({profile:{matchOptIn:false}}).scanning, false, "a cancelled profile is not described as scanning");
+assert.equal(constellationSearchState({profile:{matchOptIn:true},team:{status:"proposed"}}).scanning, false);
+assert.equal(constellationSearchState({profile:{},team:{status:"active"}}).mode, "connected");
+const waiting = constellationSearchState({profile:{matchOptIn:true},availableCounts:{"Product Creator":2,Marketing:0,Sales:1}});
+assert.equal(waiting.scanning, true);
+assert.match(waiting.label, /3 available profiles/, "radar reports only counts supplied by the matching backend");
+console.log("Constellation geometry, movement bounds, overlap recovery, and honest radar state checks passed.");

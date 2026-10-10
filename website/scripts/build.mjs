@@ -1,0 +1,38 @@
+import { copyFile, cp, mkdir, rm, readFile, writeFile } from "node:fs/promises";
+import { basename, dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+
+const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
+const outputRoot = resolve(projectRoot, "dist");
+if (dirname(outputRoot) !== projectRoot || basename(outputRoot) !== "dist") throw new Error("Unexpected build output path.");
+
+await rm(outputRoot, { recursive: true, force: true });
+await mkdir(resolve(outputRoot, "server"), { recursive: true });
+await mkdir(resolve(outputRoot, ".openai"), { recursive: true });
+await cp(resolve(projectRoot, "worker"), resolve(outputRoot, "server"), { recursive: true });
+// Worker ESM hosting has no standalone static directory. Bundle pinned installed
+// browser assets as strings served by the Worker, keeping runtime filesystem-free.
+const assetPaths = {
+  "/assets/tesseract-7.0.0.js": ["node_modules/tesseract.js/dist/tesseract.min.js", "text/javascript; charset=utf-8"],
+  "/assets/tesseract-worker-7.0.0.js": ["node_modules/tesseract.js/dist/worker.min.js", "text/javascript; charset=utf-8"],
+  "/assets/pdfjs-5.5.207.mjs": ["node_modules/pdfjs-dist/build/pdf.min.mjs", "text/javascript; charset=utf-8"],
+  "/assets/pdfjs-worker-5.5.207.mjs": ["node_modules/pdfjs-dist/build/pdf.worker.min.mjs", "text/javascript; charset=utf-8"],
+};
+const assets = {};
+for (const [url, [path, contentType]] of Object.entries(assetPaths)) {
+  assets[url] = { body: await readFile(resolve(projectRoot, path), "utf8"), contentType };
+}
+const licensePaths = ["THIRD_PARTY_NOTICES.md", "node_modules/tesseract.js/LICENSE.md", "node_modules/tesseract.js/dist/tesseract.min.js.LICENSE.txt", "node_modules/tesseract.js/dist/worker.min.js.LICENSE.txt", "node_modules/pdfjs-dist/LICENSE"];
+assets["/assets/bookkeeping-licenses.txt"] = {body:(await Promise.all(licensePaths.map(async path => path + "\n\n" + await readFile(resolve(projectRoot, path), "utf8")))).join("\n\n"),contentType:"text/plain; charset=utf-8"};
+await writeFile(resolve(outputRoot, "server/books-vendor.js"), `const assets = ${JSON.stringify(assets)};\nexport function serveBooksVendor(path, method = 'GET') {\nconst asset = assets[path];\nif (!asset || !['GET','HEAD'].includes(method)) return null;\nreturn new Response(method === 'HEAD' ? null : asset.body, {headers:{'content-type':asset.contentType,'cache-control':'public, max-age=31536000, immutable','x-content-type-options':'nosniff'}});\n}\n`);
+const fontAssets = {};
+for (const [url, name] of [["/assets/barlow-condensed-semibold.ttf", "BarlowCondensed-SemiBold.ttf"], ["/assets/instrument-serif-italic.ttf", "InstrumentSerif-Italic.ttf"]]) {
+  fontAssets[url] = (await readFile(resolve(projectRoot, "assets/fonts", name))).toString("base64");
+}
+const fontLicenses = (await Promise.all(["BarlowCondensed-OFL.txt", "InstrumentSerif-OFL.txt"].map(name => readFile(resolve(projectRoot, "assets/fonts", name), "utf8")))).join("\n\n");
+await writeFile(resolve(outputRoot, "server/design-assets.js"), `const fonts = ${JSON.stringify(fontAssets)};\nconst licenses = ${JSON.stringify(fontLicenses)};\nexport function serveDesignAsset(path, method = 'GET') {\nif (!['GET','HEAD'].includes(method)) return null;\nif (path === '/assets/font-licenses.txt') return new Response(method === 'HEAD' ? null : licenses, {headers:{'content-type':'text/plain; charset=utf-8'}});\nconst body = fonts[path];\nif (!body) return null;\nreturn new Response(method === 'HEAD' ? null : Uint8Array.from(atob(body), char => char.charCodeAt(0)), {headers:{'content-type':'font/ttf','cache-control':'public, max-age=31536000, immutable','x-content-type-options':'nosniff'}});\n}\n`);
+await copyFile(resolve(projectRoot, ".openai/hosting.json"), resolve(outputRoot, ".openai/hosting.json"));
+const logo = (await readFile(resolve(projectRoot, "assets/branding/onlyskills-logo.png"))).toString("base64");
+await writeFile(resolve(outputRoot, "server/brand-assets.js"), `const logo = ${JSON.stringify(logo)};\nexport function serveBrandAsset(path, method = 'GET') {\nif (path !== '/assets/onlyskills-logo.png' || !['GET','HEAD'].includes(method)) return null;\nreturn new Response(method === 'HEAD' ? null : Uint8Array.from(atob(logo), char => char.charCodeAt(0)), {headers:{'content-type':'image/png','cache-control':'public, max-age=3600','x-content-type-options':'nosniff'}});\n}\n`);
+await cp(resolve(projectRoot, "drizzle"), resolve(outputRoot, ".openai/drizzle"), { recursive: true });
+console.log("Built the OnlySkills Worker with pinned receipt OCR/PDF assets.");
