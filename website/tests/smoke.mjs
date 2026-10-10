@@ -99,6 +99,9 @@ assert.match(html.match(/<button\b[^>]*id="tab-matching"[^>]*>/)?.[0] || "", /ar
 assert.doesNotMatch(html.match(/<section\b[^>]*id="matching-page"[^>]*>/)?.[0] || "", /\bhidden\b/, "Matching opens without another navigation step");
 assert.match(html, /Goal workflow/);
 assert.match(html, /View WorkBuddy results/);
+assert.match(html, /id="agent-report-content"/, "the goal run includes a readable report area");
+assert.match(html, /id="run-live-update-text"/, "the goal run highlights WorkBuddy's latest progress message");
+assert.match(html, /function renderReportMarkdown\(markdown\)/, "WorkBuddy report text is safely formatted for the report view");
 assert.match(html, /id="matching-constellation-panel"/, "Matching includes the restored venture constellation view");
 assert.match(html, /id="matching-constellation" class="constellation-map"/, "the constellation has a live data-rendering host");
 assert.match(html, /function renderMatchingConstellation\(state\)/, "the map is rendered from current matching state");

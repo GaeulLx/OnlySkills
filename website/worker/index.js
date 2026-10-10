@@ -72,6 +72,15 @@ const PAGE = String.raw`<!doctype html>
     .agent-progress-events li:not(.agent-empty){display:grid;grid-template-columns:auto 1fr auto;align-items:start;gap:8px;border-top:1px solid var(--line);padding-top:9px;color:#42574d;font-size:.74rem;line-height:1.45}
     .agent-progress-events li strong{font-size:.66rem;color:#668175}
     .agent-progress-events li time{color:var(--muted);font-size:.65rem;white-space:nowrap}
+    .agent-live-update{margin-top:12px;padding:13px 15px;border-left:3px solid #bc3e2b;border-radius:0 12px 12px 0;background:#f7eee8;color:#42574d;font-size:.8rem;line-height:1.55}
+    .agent-live-update strong{display:block;margin-bottom:4px;color:var(--green);font-size:.68rem}
+    .agent-report-content{color:#42574d;font-size:.84rem;line-height:1.7}
+    .agent-report-content h4{margin:18px 0 6px;color:var(--green);font-family:Georgia,serif;font-size:1.05rem}
+    .agent-report-content p{margin:7px 0}
+    .agent-report-content ul,.agent-report-content ol{padding-left:22px;margin:7px 0}
+    .agent-report-content code{padding:2px 5px;border-radius:5px;background:#edf1e9;font-size:.9em}
+    .agent-details{margin-top:10px;border-top:1px solid var(--line);padding-top:12px}
+    .agent-details summary{cursor:pointer;color:#668175;font-size:.76rem;font-weight:750}
     .agent-result{min-width:0;border:1px solid var(--line);border-radius:14px;background:#fffefa;padding:14px}
     .agent-result h4{margin:0;font-size:.84rem;overflow-wrap:anywhere}
     .agent-result-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px}
@@ -370,10 +379,11 @@ const PAGE = String.raw`<!doctype html>
           <div class="agent-refresh-row"><span id="run-refresh-message" class="agent-meta-label">Updates appear automatically while this page is open.</span><button id="refresh-agent-run" class="secondary" type="button">Refresh status</button></div>
           <div id="run-error" class="error" role="alert"></div>
         </section>
-        <section class="card" aria-live="polite"><div class="agent-section-heading"><h3>WorkBuddy progress</h3><span>Updates from the worker</span></div><p id="run-worker-hint" class="agent-meta-label">OnlySkills will show progress after WorkBuddy claims the goal.</p><ol id="run-progress-events" class="agent-progress-events"><li class="agent-empty">Waiting for the first update.</li></ol></section>
+        <section class="card" aria-live="polite"><div class="agent-section-heading"><h3>WorkBuddy progress</h3><span>Updates from the worker</span></div><p id="run-worker-hint" class="agent-meta-label">OnlySkills will show progress after WorkBuddy claims the goal.</p><div class="agent-live-update"><strong>WorkBuddy’s latest update</strong><span id="run-live-update-text">Waiting for WorkBuddy to claim this goal.</span></div><details class="agent-details"><summary>Show all progress updates</summary><ol id="run-progress-events" class="agent-progress-events"><li class="agent-empty">Waiting for the first update.</li></ol></details></section>
+        <section class="card"><div class="agent-section-heading"><h3>Goal report</h3><span>Prepared from this run’s results</span></div><div id="agent-report-content" class="agent-report-content"><p class="agent-empty">Your report will appear here when WorkBuddy finishes.</p></div></section>
         <section>
-          <div class="agent-section-heading"><h3>Agent results</h3><span>Fields shown exactly as returned</span></div>
-          <div id="agent-results" class="agent-results"></div>
+          <div class="agent-section-heading"><h3>Detailed agent results</h3><span>Structured outputs</span></div>
+          <details class="agent-details"><summary>Show all five agent results</summary><div id="agent-results" class="agent-results"></div></details>
         </section>
         <section id="recommendation-card" class="card">
           <div class="agent-section-heading"><h3>Recommendation</h3><span>Review before recording a decision</span></div>
@@ -396,7 +406,8 @@ const PAGE = String.raw`<!doctype html>
         <div id="workbuddy-lookup-error" class="error" role="alert"></div>
         <section id="workbuddy-results-panel" class="workbuddy-results-panel" hidden aria-live="polite">
           <section class="card"><div class="agent-run-heading"><div><span class="eyebrow">WORKBUDDY RUN</span><h2><span id="workbuddy-run-id"></span></h2></div><span id="workbuddy-run-status" class="agent-status-pill">Not returned by backend</span></div><div class="agent-section-heading"><h3>Goal</h3></div><div id="workbuddy-run-goal"></div></section>
-          <section><div class="agent-section-heading"><h3>Agent results</h3><span>Returned data</span></div><div id="workbuddy-agent-results" class="agent-results"></div></section>
+          <section class="card"><div class="agent-section-heading"><h3>Run report</h3></div><div id="workbuddy-report" class="agent-report-content"><p class="agent-empty">No written report was returned.</p></div></section>
+          <section><div class="agent-section-heading"><h3>Detailed agent results</h3><span>Returned data</span></div><div id="workbuddy-agent-results" class="agent-results"></div></section>
           <section class="card"><div class="agent-section-heading"><h3>Recommendation</h3></div><div id="workbuddy-recommendation"></div></section>
           <section class="card"><div class="agent-section-heading"><h3>Artifacts</h3><span>Titles and locations</span></div><div id="workbuddy-artifacts" class="workbuddy-artifacts"></div></section>
           <section class="card"><div class="agent-section-heading"><h3>Validation status</h3></div><div id="workbuddy-validation"></div></section>
@@ -474,7 +485,7 @@ const PAGE = String.raw`<!doctype html>
         }
         if (error instanceof TypeError) {
           const origin = window.location.origin;
-          throw new Error("The browser could not reach the backend. If DevTools reports a CORS error, set FRONTEND_ORIGIN=" + origin + " in Render. The deployed frontend origin is https://onlyskill-student-ventures.li895.chatgpt.site. This app calls Render directly; no proxy is used.");
+          throw new Error("The browser could not reach the backend. If DevTools reports a CORS error, set FRONTEND_ORIGIN=" + origin + " in Render. The deployed frontend origin is https://onlyskills-venture-workspace.li895.chatgpt.site. This app calls Render directly; no proxy is used.");
         }
         throw error;
       } finally {
@@ -495,6 +506,38 @@ const PAGE = String.raw`<!doctype html>
       if (value === undefined || value === null) return "Not returned by backend";
       return typeof value === "string" ? value : JSON.stringify(value, null, 2);
     }
+    function prettyApiLabel(value) {
+      const labels = {
+        businessAnalyst:"Business analysis", growth:"Growth plan", teamBuilder:"Team and skills", operations:"Operations", feedback:"Feedback and recommendation",
+        operatingBreakEvenUnits:"Operating break-even units", fullReserveCashHurdleUnits:"Full-reserve cash hurdle", reserveInclusiveContributionHurdleUnits:"Reserve-inclusive contribution hurdle",
+        maximumSaleableUnits:"Maximum saleable units", budgetAllocation:"Budget allocation", budgetHeadroom:"Budget remaining", requestedBudget:"User budget", withinBudget:"Within budget",
+        identifiedNeeds:"Skills needed", contentCalendar:"Content calendar", callToAction:"Call to action", conversionRate:"Conversion rate", clickThroughRate:"Click-through rate"
+      };
+      if (labels[value]) return labels[value];
+      return String(value).replace(/([a-z0-9])([A-Z])/g, "$1 $2").replace(/([A-Z])([A-Z][a-z])/g, "$1 $2").replace(/[_-]+/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
+    }
+    function renderReportMarkdown(markdown) {
+      const lines = String(markdown || "").split(/\r?\n/);
+      const output = [];
+      let listOpen = false;
+      const closeList = () => { if (listOpen) { output.push("</ul>"); listOpen = false; } };
+      for (const rawLine of lines) {
+        const line = rawLine.trim();
+        if (!line) { closeList(); continue; }
+        const heading = line.match(/^#{1,4}\s+(.+)$/);
+        if (heading) { closeList(); output.push("<h4>" + escapeHTML(heading[1]) + "</h4>"); continue; }
+        const bullet = line.match(/^[-*]\s+(.+)$/);
+        if (bullet) {
+          if (!listOpen) { output.push("<ul>"); listOpen = true; }
+          output.push("<li>" + escapeHTML(bullet[1]).replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>").replace(/\x60([^\x60]+)\x60/g, "<code>$1</code>") + "</li>");
+          continue;
+        }
+        closeList();
+        output.push("<p>" + escapeHTML(line).replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>").replace(/\x60([^\x60]+)\x60/g, "<code>$1</code>") + "</p>");
+      }
+      closeList();
+      return output.join("");
+    }
     function renderApiValue(value) {
       if (value === null) return "<span>null</span>";
       if (Array.isArray(value)) {
@@ -504,7 +547,7 @@ const PAGE = String.raw`<!doctype html>
       if (value && typeof value === "object") {
         const entries = Object.entries(value);
         if (!entries.length) return "<span>{}</span>";
-        return "<dl class=\"agent-fields agent-nested\">" + entries.map(([key, child]) => "<div><dt>" + escapeHTML(key) + "</dt><dd>" + renderApiValue(child) + "</dd></div>").join("") + "</dl>";
+        return "<dl class=\"agent-fields agent-nested\">" + entries.map(([key, child]) => "<div><dt>" + escapeHTML(prettyApiLabel(key)) + "</dt><dd>" + renderApiValue(child) + "</dd></div>").join("") + "</dl>";
       }
       return "<span>" + escapeHTML(String(value)) + "</span>";
     }
@@ -513,7 +556,7 @@ const PAGE = String.raw`<!doctype html>
       if (value && typeof value === "object" && !Array.isArray(value)) {
         const entries = Object.entries(value);
         if (!entries.length) return renderApiValue(value);
-        return "<dl class=\"agent-fields\">" + entries.map(([key, child]) => "<div><dt>" + escapeHTML(key) + "</dt><dd>" + renderApiValue(child) + "</dd></div>").join("") + "</dl>";
+        return "<dl class=\"agent-fields\">" + entries.map(([key, child]) => "<div><dt>" + escapeHTML(prettyApiLabel(key)) + "</dt><dd>" + renderApiValue(child) + "</dd></div>").join("") + "</dl>";
       }
       return "<div class=\"agent-fields\"><div><dt>Result</dt><dd>" + renderApiValue(value) + "</dd></div></div>";
     }
@@ -950,13 +993,17 @@ const PAGE = String.raw`<!doctype html>
         if (value === undefined) value = agentValueFrom(run.goalResponse, key);
         const statusValue = agentStatusFrom([run.statusData, run.resultsData, run.goalResponse], key, value);
         const statusText = statusValue === undefined ? "Status not returned by backend" : displayApiValue(statusValue);
-        return "<article class=\"agent-result\"><div class=\"agent-result-head\"><h4>" + escapeHTML(key) + "</h4><span class=\"agent-status-pill\">" + escapeHTML(statusText) + "</span></div>" + renderApiFields(value, "No result returned for this agent yet.") + "</article>";
+        return "<article class=\"agent-result\"><div class=\"agent-result-head\"><h4>" + escapeHTML(prettyApiLabel(key)) + "</h4><span class=\"agent-status-pill\">" + escapeHTML(statusText) + "</span></div>" + renderApiFields(value, "No result returned for this agent yet.") + "</article>";
       }).join("");
 
       const recommendation = firstReturnedField([run.resultsData, run.statusData, run.goalResponse], "recommendation");
       if (recommendation !== undefined) run.recommendation = recommendation;
       $("#recommendation-content").innerHTML = renderApiFields(run.recommendation, "No recommendation has been returned yet.");
       const events = Array.isArray(run.statusData?.events) ? run.statusData.events : [];
+      const latestWorkBuddyEvent = [...events].reverse().find((entry) => entry?.source === "workbuddy");
+      $("#run-live-update-text").textContent = latestWorkBuddyEvent
+        ? [latestWorkBuddyEvent.step, latestWorkBuddyEvent.detail].filter(Boolean).join(": ")
+        : "Waiting for WorkBuddy to claim this goal and send its first update.";
       const eventList = $("#run-progress-events");
       eventList.innerHTML = events.length ? events.map((entry) => {
         const source = entry?.source === "workbuddy" ? "WorkBuddy" : "OnlySkills";
@@ -964,6 +1011,20 @@ const PAGE = String.raw`<!doctype html>
         const when = entry?.at ? new Date(entry.at).toLocaleTimeString() : "";
         return '<li><strong>' + escapeHTML(source) + '</strong><span>' + escapeHTML(entry?.step || "Update") + ': ' + escapeHTML(detail) + '</span>' + (when ? '<time>' + escapeHTML(when) + '</time>' : '') + '</li>';
       }).join("") : '<li class="agent-empty">Waiting for the first update.</li>';
+      const feedback = agentValueFrom(run.resultsData, "feedback") || agentValueFrom(run.statusData, "feedback");
+      const reportMarkdown = feedback?.reportMarkdown || run.resultsData?.reportMarkdown || run.statusData?.reportMarkdown;
+      if (typeof reportMarkdown === "string" && reportMarkdown.trim()) {
+        $("#agent-report-content").innerHTML = renderReportMarkdown(reportMarkdown);
+      } else {
+        const business = agentValueFrom(run.resultsData, "businessAnalyst");
+        const reportParts = [];
+        if (run.statusData?.goal) reportParts.push("## Goal\n" + run.statusData.goal);
+        if (business?.summary) reportParts.push("## Business analysis\n" + business.summary);
+        if (feedback?.finding) reportParts.push("## Finding\n" + feedback.finding);
+        if (feedback?.recommendation) reportParts.push("## Recommendation\n" + feedback.recommendation);
+        reportParts.push("## Report status\nWorkBuddy did not return a written report for this run. Review the detailed outputs below. Any synthetic data or fixed benchmark should be treated as illustrative, not as a user-specific forecast.");
+        $("#agent-report-content").innerHTML = renderReportMarkdown(reportParts.join("\n\n"));
+      }
       const normalizedStatus = String(overallStatus || "").toLowerCase();
       const hints = {
         queued: "Your goal is in the queue. WorkBuddy will start when its worker is connected and waiting.",
@@ -1070,6 +1131,8 @@ const PAGE = String.raw`<!doctype html>
       const recommendation = workBuddyField(documents, ["recommendation"]);
       const artifacts = workBuddyField(documents, ["artifacts"]);
       const validation = workBuddyField(documents, ["validationStatus", "validation_status", "validation", "validationResult", "validationResults", "isValid", "is_valid"]);
+      const feedback = workBuddyField(documents, ["feedback"]);
+      const report = feedback?.reportMarkdown || workBuddyField(documents, ["reportMarkdown"]);
       $("#workbuddy-run-id").textContent = String(runId ?? queriedRunId);
       $("#workbuddy-run-status").textContent = displayApiValue(status);
       $("#workbuddy-run-goal").innerHTML = renderApiFields(goal, "No goal was returned by the backend.");
@@ -1081,8 +1144,9 @@ const PAGE = String.raw`<!doctype html>
         }
         const agentStatus = agentStatusFrom(documents, key, result);
         const statusText = agentStatus === undefined ? "Status not returned by backend" : displayApiValue(agentStatus);
-        return '<article class="agent-result"><div class="agent-result-head"><h4>' + escapeHTML(key) + '</h4><span class="agent-status-pill">' + escapeHTML(statusText) + '</span></div>' + renderApiFields(result, "No result returned for this agent.") + '</article>';
+        return '<article class="agent-result"><div class="agent-result-head"><h4>' + escapeHTML(prettyApiLabel(key)) + '</h4><span class="agent-status-pill">' + escapeHTML(statusText) + '</span></div>' + renderApiFields(result, "No result returned for this agent.") + '</article>';
       }).join("");
+      $("#workbuddy-report").innerHTML = typeof report === "string" && report.trim() ? renderReportMarkdown(report) : '<p class="agent-empty">No written report was returned for this run. Review the structured agent results below.</p>';
       $("#workbuddy-recommendation").innerHTML = renderApiFields(recommendation, "No recommendation was returned by the backend.");
       $("#workbuddy-artifacts").innerHTML = renderWorkBuddyArtifacts(artifacts);
       $("#workbuddy-validation").innerHTML = renderApiFields(validation, "No validation status was returned by the backend.");

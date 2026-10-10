@@ -36,7 +36,9 @@ The **Goal workflow** tab is an additional page in the same Worker-served app. I
 
 The Worker runtime variable `ONLYSKILLS_API_BASE_URL` can override the API origin. When unset, the app uses `https://onlyskills.onrender.com`. Do not put API keys or service-account credentials in the browser. A goal stays queued until the WorkBuddy Desktop MCP worker claims it. The progress panel displays backend events and labels an event as WorkBuddy only when the backend marks its source as `workbuddy`. Creator profiles and sales/KPI values may be synthetic demo data, and approval only records a decision.
 
-If the browser reports a CORS error, set the Render service's `FRONTEND_ORIGIN` to the deployed frontend origin: `https://onlyskill-student-ventures.li895.chatgpt.site`.
+The run screen highlights WorkBuddy's latest progress update, shows a readable report when `feedback.reportMarkdown` is returned, and keeps the five structured results in a details section. The current business-case calculator still uses a fixed reusable-bottle benchmark, and the sales/creator context is synthetic. For other product goals, WorkBuddy must label those figures as benchmarks rather than present them as the user's actual costs or forecast. The report can only use the details supplied in the goal plus clearly identified assumptions.
+
+If the browser reports a CORS error, set the Render service's `FRONTEND_ORIGIN` to the deployed frontend origin: `https://onlyskills-venture-workspace.li895.chatgpt.site`.
 
 To verify, open **Goal workflow**, wait for the health status, submit a goal (only Goal is required), and confirm it first appears as queued. With the WorkBuddy Desktop worker active, watch its progress events, then review the five agent cards and recommendation. Use **Approve** or **Reject** and confirm the response status/message. Matching is the default tab; Bookkeeping remains available.
 
