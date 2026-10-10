@@ -60,7 +60,22 @@ app.post('/api/goal', async (req, res, next) => {
       output = requestedProvider === 'openai' ? await generateGoalPlan(input) : runAgents(input);
       if (requestedProvider === 'openai') console.info(JSON.stringify({ event: 'openai.request_succeeded', requestId: req.requestId }));
     } catch (error) {
-      console.error(JSON.stringify({ event: `${requestedProvider}.failed`, requestId: req.requestId, status: error.status || null, code: error.code || null, errorType: error.constructor?.name || 'Error' }));
+      const providerError = error.error && typeof error.error === 'object' ? error.error : {};
+      const safeErrorMessage = String(providerError.message || error.message || '')
+        .replace(/\bsk-[A-Za-z0-9_-]{10,}\b/g, '[REDACTED]')
+        .replace(/Bearer\s+\S+/gi, 'Bearer [REDACTED]')
+        .slice(0, 1000);
+      console.error(JSON.stringify({
+        event: `${requestedProvider}.failed`,
+        requestId: req.requestId,
+        openAIRequestId: error.requestID || null,
+        httpStatus: error.status || null,
+        message: safeErrorMessage,
+        type: providerError.type || error.type || error.constructor?.name || 'Error',
+        code: providerError.code || error.code || null,
+        param: providerError.param || null,
+        model: process.env.OPENAI_MODEL || 'gpt-4.1-mini'
+      }));
       const status = error.status === 429 ? 429 : 502;
       const message = error.status === 429
         ? 'OpenAI quota or rate limit reached. Check API billing and limits, then try again.'
