@@ -7,7 +7,7 @@ export const BOOKS_CSS = String.raw`
 
 export const BOOKS_HTML = String.raw`
 <section id="books-page" class="app-page" aria-labelledby="tab-books" hidden>
-  <section class="hero agent-hero"><div class="eyebrow">VENTURE CASHBOOK</div><h1>Receipts in.<br>Clear books out.</h1><p>Upload a receipt, check the details, and keep your income and expenses in one place.</p></section>
+  <section class="hero agent-hero"><div class="eyebrow">VENTURE CASHBOOK</div><h1><span>Receipts in.</span><em>Clear books out.</em></h1><p>Upload a receipt, check the details, and keep your income and expenses in one place.</p></section>
   <section class="card books-form">
     <div class="books-toolbar"><div class="field"><span>Bookkeeping for</span><div id="books-scope-display" class="books-scope-display" role="status" aria-live="polite">Loading shared team books…</div><input id="books-scope" type="hidden" value=""></div><button id="books-refresh" type="button" class="secondary">Refresh ledger</button></div>
     <p id="books-sharing-note" class="books-copy">Shared team books are visible to all three team members, including transactions, receipts, contributors and totals. Existing personal records are kept but are not shown or moved into the team ledger. Upload venture-related records only.</p>

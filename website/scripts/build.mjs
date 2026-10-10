@@ -25,6 +25,12 @@ for (const [url, [path, contentType]] of Object.entries(assetPaths)) {
 const licensePaths = ["THIRD_PARTY_NOTICES.md", "node_modules/tesseract.js/LICENSE.md", "node_modules/tesseract.js/dist/tesseract.min.js.LICENSE.txt", "node_modules/tesseract.js/dist/worker.min.js.LICENSE.txt", "node_modules/pdfjs-dist/LICENSE"];
 assets["/assets/bookkeeping-licenses.txt"] = {body:(await Promise.all(licensePaths.map(async path => path + "\n\n" + await readFile(resolve(projectRoot, path), "utf8")))).join("\n\n"),contentType:"text/plain; charset=utf-8"};
 await writeFile(resolve(outputRoot, "server/books-vendor.js"), `const assets = ${JSON.stringify(assets)};\nexport function serveBooksVendor(path, method = 'GET') {\nconst asset = assets[path];\nif (!asset || !['GET','HEAD'].includes(method)) return null;\nreturn new Response(method === 'HEAD' ? null : asset.body, {headers:{'content-type':asset.contentType,'cache-control':'public, max-age=31536000, immutable','x-content-type-options':'nosniff'}});\n}\n`);
+const fontAssets = {};
+for (const [url, name] of [["/assets/barlow-condensed-semibold.ttf", "BarlowCondensed-SemiBold.ttf"], ["/assets/instrument-serif-italic.ttf", "InstrumentSerif-Italic.ttf"]]) {
+  fontAssets[url] = (await readFile(resolve(projectRoot, "assets/fonts", name))).toString("base64");
+}
+const fontLicenses = (await Promise.all(["BarlowCondensed-OFL.txt", "InstrumentSerif-OFL.txt"].map(name => readFile(resolve(projectRoot, "assets/fonts", name), "utf8")))).join("\n\n");
+await writeFile(resolve(outputRoot, "server/design-assets.js"), `const fonts = ${JSON.stringify(fontAssets)};\nconst licenses = ${JSON.stringify(fontLicenses)};\nexport function serveDesignAsset(path, method = 'GET') {\nif (!['GET','HEAD'].includes(method)) return null;\nif (path === '/assets/font-licenses.txt') return new Response(method === 'HEAD' ? null : licenses, {headers:{'content-type':'text/plain; charset=utf-8'}});\nconst body = fonts[path];\nif (!body) return null;\nreturn new Response(method === 'HEAD' ? null : Uint8Array.from(atob(body), char => char.charCodeAt(0)), {headers:{'content-type':'font/ttf','cache-control':'public, max-age=31536000, immutable','x-content-type-options':'nosniff'}});\n}\n`);
 await copyFile(resolve(projectRoot, ".openai/hosting.json"), resolve(outputRoot, ".openai/hosting.json"));
 await cp(resolve(projectRoot, "drizzle"), resolve(outputRoot, ".openai/drizzle"), { recursive: true });
 console.log("Built the OnlySkills Worker with pinned receipt OCR/PDF assets.");

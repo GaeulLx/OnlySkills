@@ -52,3 +52,7 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+# Heading typefaces
+
+Barlow Condensed SemiBold (Copyright 2017 The Barlow Project Authors) and Instrument Serif Italic (Copyright 2022 The Instrument Serif Project Authors) are redistributed unchanged under SIL Open Font License 1.1. Source: the respective `ofl/barlowcondensed` and `ofl/instrumentserif` directories in the official [Google Fonts repository](https://github.com/google/fonts). Font binaries and complete license notices are in `assets/fonts/`; the deployment also serves the notices at `/assets/font-licenses.txt`.
+

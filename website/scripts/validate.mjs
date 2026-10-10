@@ -36,5 +36,13 @@ for (const path of ["/assets/tesseract-7.0.0.js", "/assets/tesseract-worker-7.0.
   assert.ok((await asset.text()).length > 100);
 }
 assert.doesNotMatch(source, /\/api\/reset/);
+for (const path of ["/assets/barlow-condensed-semibold.ttf", "/assets/instrument-serif-italic.ttf"]) {
+  const font = await worker.default.fetch(new Request("https://onlyskill.test" + path), {});
+  assert.equal(font.status, 200);
+  assert.equal(font.headers.get("content-type"), "font/ttf");
+  assert.deepEqual(Array.from(new Uint8Array(await font.arrayBuffer()).slice(0, 4)), [0, 1, 0, 0], "a real TrueType font is served");
+}
+const fontNotice = await worker.default.fetch(new Request("https://onlyskill.test/assets/font-licenses.txt"), {});
+assert.match(await fontNotice.text(), /SIL OPEN FONT LICENSE/);
 assert.match(source, /Product Creator[\s\S]*Marketing[\s\S]*Sales/);
 console.log("OnlySkills Worker artifact is valid and declares its shared D1 database.");

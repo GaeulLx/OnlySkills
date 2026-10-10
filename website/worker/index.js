@@ -4,6 +4,8 @@ import { BOOKS_CSS, BOOKS_HTML, BOOKS_SCRIPT } from "./books-ui.js";
 import { serveBooksVendor } from "./books-vendor.js";
 import { CHECKLIST_SCRIPT } from "./checklist.js";
 import { lookupWorkBuddyResults } from "./workbuddy-results.js";
+import { CONSTELLATION_CSS, CONSTELLATION_SCRIPT, ROLE_ICONS } from "./constellation-ui.js";
+import { serveDesignAsset } from "./design-assets.js";
 
 const ROLES = ["Product Creator", "Marketing", "Sales"];
 const SESSION_TTL_MS = 4 * 60 * 60 * 1000;
@@ -216,61 +218,6 @@ const PAGE = String.raw`<!doctype html>
     body.constellation-theme .overview-section h2,body.constellation-theme .task-heading h3,body.constellation-theme .matching-team-head h2,body.constellation-theme .agent-run-heading h2{font-family:"Arial Narrow","Roboto Condensed",Impact,sans-serif;letter-spacing:-.015em}
     body.constellation-theme .matching-count{border-radius:999px;background:#eee8e1;color:#655b52}
     body.constellation-theme .matching-score{border-radius:999px;background:#e3eee6;color:#376a54}
-    body.constellation-theme .constellation-panel{position:relative;container-type:inline-size;margin:22px 0 16px;padding:22px 24px 18px;border:1px solid rgba(209,190,173,.58);border-radius:30px 18px 29px 19px;background:radial-gradient(ellipse at 14% 18%,rgba(243,204,180,.19),transparent 36%),radial-gradient(ellipse at 87% 80%,rgba(183,205,190,.19),transparent 33%),rgba(255,250,245,.78);overflow:hidden}
-    body.constellation-theme .constellation-panel::before{content:"";position:absolute;top:-122px;left:41%;width:300px;height:240px;border:1px solid rgba(179,156,136,.17);border-radius:47% 53% 44% 56%;transform:rotate(-21deg);pointer-events:none}
-    body.constellation-theme .constellation-panel::after{content:"";position:absolute;right:14%;bottom:5%;width:12px;height:12px;border-radius:50%;background:rgba(90,151,133,.18);box-shadow:0 0 0 11px rgba(90,151,133,.045),0 0 36px 10px rgba(90,151,133,.12);pointer-events:none}
-    body.constellation-theme .constellation-heading{display:flex;align-items:end;justify-content:space-between;gap:16px;margin-bottom:10px}
-    body.constellation-theme .visually-hidden{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
-    body.constellation-theme .constellation-heading .eyebrow{color:#87796d;font:500 .6rem/1.5 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.12em}
-    body.constellation-theme .constellation-heading p{max-width:48ch;margin:0;color:#7b7168;font-size:.7rem;line-height:1.5;text-align:right}
-    body.constellation-theme .constellation-map{position:relative;display:grid;grid-template-columns:minmax(0,1fr) minmax(190px,.85fr) minmax(0,1fr);grid-template-rows:minmax(170px,1fr) minmax(170px,1fr);gap:8px;min-height:405px;isolation:isolate}
-    body.constellation-theme .constellation-lines{position:absolute;inset:0;width:100%;height:100%;z-index:-1;overflow:visible;pointer-events:none}
-    body.constellation-theme .constellation-lines path{fill:none;stroke-width:1.6;stroke-linecap:round;opacity:.78;transition:stroke-width .25s,opacity .25s}
-    body.constellation-theme .constellation-lines .constellation-orbit-trace{stroke:#9b8c7e;stroke-width:1;stroke-dasharray:2 9;opacity:.48;animation:constellation-orbit 42s linear infinite}
-    body.constellation-theme .constellation-line-product{stroke:var(--role-product)}
-    body.constellation-theme .constellation-line-marketing{stroke:var(--role-marketing)}
-    body.constellation-theme .constellation-line-sales{stroke:var(--role-sales)}
-    body.constellation-theme .constellation-idea{grid-column:2;grid-row:1 / span 2;align-self:center;justify-self:center;z-index:1;display:flex;width:min(100%,260px);min-height:224px;flex-direction:column;align-items:center;justify-content:center;padding:23px 21px;border:1px solid #c8a990;border-radius:46% 44% 42% 39% / 39% 41% 46% 48%;background:#ead9c8;text-align:center;box-shadow:0 12px 34px rgba(96,67,44,.07)}
-    body.constellation-theme .constellation-idea-mark{position:relative;width:42px;height:42px;margin-bottom:8px;border:1px solid #1b776e;border-radius:50%;color:#1b776e}
-    body.constellation-theme .constellation-idea-mark::before,body.constellation-theme .constellation-idea-mark::after{content:"";position:absolute;inset:5px;border:1px solid currentColor;border-radius:50%;transform:rotate(58deg) scaleX(.56)}
-    body.constellation-theme .constellation-idea-mark::after{transform:rotate(-58deg) scaleX(.56)}
-    body.constellation-theme .constellation-idea-mark span{position:absolute;left:50%;top:50%;width:7px;height:7px;border-radius:50%;background:currentColor;transform:translate(-50%,-50%)}
-    body.constellation-theme .constellation-idea .eyebrow{color:#78604e;font:500 .55rem/1.4 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.1em}
-    body.constellation-theme .constellation-idea strong{max-width:22ch;margin:8px 0;color:#352f29;font:600 1.08rem/1.25 Georgia,serif;overflow-wrap:anywhere}
-    body.constellation-theme .constellation-idea p{margin:0;color:#756252;font-size:.65rem;line-height:1.45}
-    body.constellation-theme .constellation-map::after{content:"";position:absolute;left:48%;top:9%;width:13px;height:13px;border:1px solid rgba(88,143,128,.46);border-radius:50%;box-shadow:0 0 0 9px rgba(88,143,128,.035);pointer-events:none;animation:constellation-drift 7s ease-in-out infinite}
-    body.constellation-theme .constellation-branch{display:grid;grid-template-columns:minmax(112px,.9fr) minmax(120px,1fr);align-items:center;gap:10px;min-width:0;z-index:1;transition:transform .28s cubic-bezier(.2,.75,.25,1),filter .28s}
-    body.constellation-theme .constellation-branch[data-role="Product Creator"]{grid-column:1;grid-row:1;align-self:end;transform:translateY(8px) rotate(-1deg)}
-    body.constellation-theme .constellation-branch[data-role="Marketing"]{grid-column:3;grid-row:1;align-self:end;transform:translateY(-7px) rotate(1.3deg)}
-    body.constellation-theme .constellation-branch[data-role="Sales"]{grid-column:3;grid-row:2;align-self:start;transform:translateY(8px) rotate(-1.1deg)}
-    body.constellation-theme .constellation-branch[data-role="Product Creator"]:hover,body.constellation-theme .constellation-branch[data-role="Product Creator"]:focus-within{transform:translate(2px,-4px) rotate(-.25deg);filter:drop-shadow(0 8px 12px rgba(141,83,65,.1))}
-    body.constellation-theme .constellation-branch[data-role="Marketing"]:hover,body.constellation-theme .constellation-branch[data-role="Marketing"]:focus-within{transform:translate(-2px,-2px) rotate(.3deg);filter:drop-shadow(0 8px 12px rgba(58,117,104,.11))}
-    body.constellation-theme .constellation-branch[data-role="Sales"]:hover,body.constellation-theme .constellation-branch[data-role="Sales"]:focus-within{transform:translate(-2px,-4px) rotate(-.3deg);filter:drop-shadow(0 8px 12px rgba(66,90,166,.11))}
-    body.constellation-theme .constellation-orb{--orbit-color:var(--role-product);--orbit-wash:#f4e2da;position:relative;display:flex;min-height:130px;flex-direction:column;align-items:center;justify-content:center;padding:14px 10px;border:1px solid rgba(255,255,255,.42);border-radius:43% 49% 41% 46% / 40% 44% 47% 52%;background:radial-gradient(circle at var(--orb-x,50%) var(--orb-y,30%),rgba(255,255,255,.58),transparent 50%),var(--orbit-wash);color:var(--orbit-color);text-align:center;transition:border-radius .35s,transform .35s,box-shadow .35s;box-shadow:0 8px 25px rgba(90,69,52,.04)}
-    body.constellation-theme .constellation-orb:hover{border-radius:51% 43% 48% 41% / 45% 52% 40% 48%;transform:scale(1.04);box-shadow:0 12px 32px color-mix(in srgb,var(--orbit-color) 14%,transparent)}
-    body.constellation-theme .constellation-branch[data-role="Marketing"] .constellation-orb{--orbit-color:var(--role-marketing);--orbit-wash:#e5ece3;border-radius:47% 41% 46% 43% / 44% 40% 51% 48%}
-    body.constellation-theme .constellation-branch[data-role="Sales"] .constellation-orb{--orbit-color:var(--role-sales);--orbit-wash:#e7e8f1;border-radius:42% 49% 44% 46% / 48% 45% 39% 51%}
-    body.constellation-theme .constellation-symbol{position:relative;width:34px;height:34px;margin-bottom:6px;border:1px solid currentColor;border-radius:50%;opacity:.88}
-    body.constellation-theme .constellation-symbol::before,body.constellation-theme .constellation-symbol::after{content:"";position:absolute;inset:4px;border:1px solid currentColor;border-radius:50%;transform:rotate(55deg) scaleX(.55)}
-    body.constellation-theme .constellation-symbol::after{transform:rotate(-55deg) scaleX(.55)}
-    body.constellation-theme .constellation-symbol span{position:absolute;left:50%;top:50%;width:6px;height:6px;border-radius:50%;background:currentColor;transform:translate(-50%,-50%)}
-    body.constellation-theme .constellation-orb strong{font:600 .89rem/1.2 "Arial Narrow","Roboto Condensed",Impact,sans-serif}
-    body.constellation-theme .constellation-orb small{margin-top:5px;color:#746b62;font-size:.57rem;line-height:1.4}
-    body.constellation-theme .constellation-member{min-width:0;padding:12px 11px;border:1px solid rgba(209,190,173,.7);border-radius:20px 13px 19px 14px;background:radial-gradient(130px circle at var(--card-x,50%) var(--card-y,0%),rgba(255,255,255,.9),transparent 85%),rgba(255,251,247,.96);transition:transform .22s,border-radius .22s,border-color .22s}
-    body.constellation-theme .constellation-member:hover{transform:translateY(-2px) rotate(.25deg);border-radius:16px 20px 13px 22px;border-color:#c4ab99}
-    body.constellation-theme .constellation-member small,body.constellation-theme .constellation-member strong{display:block;overflow-wrap:anywhere}
-    body.constellation-theme .constellation-member small{color:#887c71;font:500 .53rem/1.5 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.055em;text-transform:uppercase}
-    body.constellation-theme .constellation-member strong{margin:5px 0 3px;color:#39332d;font-size:.75rem;font-weight:650;line-height:1.3}
-    body.constellation-theme .constellation-member p{margin:0;color:#7d736a;font-size:.59rem;line-height:1.45}
-    body.constellation-theme .constellation-branch[data-role="Product Creator"] .constellation-member{border-left:2px solid var(--role-product)}
-    body.constellation-theme .constellation-branch[data-role="Marketing"] .constellation-member{border-left:2px solid var(--role-marketing)}
-    body.constellation-theme .constellation-branch[data-role="Sales"] .constellation-member{border-left:2px solid var(--role-sales)}
-    @container(max-width:760px){body.constellation-theme .constellation-panel{padding:19px 17px 16px}body.constellation-theme .constellation-heading{align-items:flex-start;flex-direction:column;gap:4px}body.constellation-theme .constellation-heading p{text-align:left}body.constellation-theme .constellation-map{grid-template-columns:1fr;grid-template-rows:auto;gap:9px;min-height:0;padding-left:16px}body.constellation-theme .constellation-lines{display:none}body.constellation-theme .constellation-map::before{content:"";position:absolute;left:5px;top:34px;bottom:34px;border-left:1px solid #cdb9a7}body.constellation-theme .constellation-idea{grid-column:1;grid-row:1;width:100%;min-height:132px;flex-direction:row;justify-content:flex-start;gap:13px;padding:16px;border-radius:20px 13px 19px 14px;text-align:left}body.constellation-theme .constellation-idea-mark{flex:none;margin:0}body.constellation-theme .constellation-idea strong{margin:5px 0;font-size:.95rem}body.constellation-theme .constellation-idea p{font-size:.62rem}body.constellation-theme .constellation-branch{grid-column:1!important;grid-row:auto!important;grid-template-columns:96px minmax(0,1fr);gap:10px;padding:2px 0}body.constellation-theme .constellation-orb{min-height:94px;padding:10px 8px}body.constellation-theme .constellation-symbol{width:28px;height:28px;margin-bottom:4px}body.constellation-theme .constellation-orb strong{font-size:.78rem}body.constellation-theme .constellation-member{padding:11px}}
-    @container(max-width:410px){body.constellation-theme .constellation-panel{padding:16px 13px 13px}body.constellation-theme .constellation-branch{grid-template-columns:82px minmax(0,1fr);gap:7px}body.constellation-theme .constellation-orb{min-height:86px}body.constellation-theme .constellation-member strong{font-size:.7rem}}
-    @container(max-width:760px){body.constellation-theme .constellation-map::after{left:auto;right:9%;top:13px}body.constellation-theme .constellation-branch{transform:none!important}}
-    @keyframes constellation-orbit{to{stroke-dashoffset:-88}}
-    @keyframes constellation-drift{0%,100%{transform:translate(0,0) scale(.9);opacity:.48}50%{transform:translate(13px,11px) scale(1.12);opacity:.9}}
-    @media(prefers-reduced-motion:reduce){body.constellation-theme .constellation-lines .constellation-orbit-trace,body.constellation-theme .constellation-map::after{animation:none}}
     #cursor-glow{position:fixed;z-index:1000;inset:0;pointer-events:none;opacity:0;background:radial-gradient(260px circle at var(--pointer-x,-1000px) var(--pointer-y,-1000px),rgba(247,188,146,.16),rgba(153,198,183,.075) 39%,transparent 73%);mix-blend-mode:soft-light;transition:opacity .28s ease}
     #cursor-glow.is-visible{opacity:.92}
     @media(hover:none),(pointer:coarse){#cursor-glow{display:none}}
@@ -308,19 +255,11 @@ const PAGE = String.raw`<!doctype html>
     body.constellation-theme .constellation-idea strong{margin:5px 0 4px}
     body.constellation-theme .constellation-idea{background:radial-gradient(ellipse at var(--idea-x,50%) var(--idea-y,35%),rgba(255,250,245,.78),transparent 48%),#ead9c8;box-shadow:0 16px 42px rgba(96,67,44,.1),inset 0 1px rgba(255,255,255,.48);transition:border-radius .42s cubic-bezier(.2,.75,.25,1),box-shadow .32s}
     body.constellation-theme .constellation-idea:hover{border-radius:42% 48% 39% 46% / 44% 38% 51% 46%;box-shadow:0 19px 48px rgba(96,67,44,.13),inset 0 1px rgba(255,255,255,.58)}
-    body.constellation-theme .constellation-branch[data-role="Product Creator"]{--branch-color:var(--role-product)}
-    body.constellation-theme .constellation-branch[data-role="Marketing"]{--branch-color:var(--role-marketing)}
-    body.constellation-theme .constellation-branch[data-role="Sales"]{--branch-color:var(--role-sales)}
-    body.constellation-theme .constellation-member{background:radial-gradient(150px circle at var(--card-x,50%) var(--card-y,0%),color-mix(in srgb,var(--branch-color) 12%,white),transparent 82%),rgba(255,251,247,.96);transition:transform .22s,border-radius .22s,border-color .22s,box-shadow .22s}
-    body.constellation-theme .constellation-member:hover{box-shadow:0 10px 26px rgba(77,63,50,.08),0 0 24px color-mix(in srgb,var(--branch-color) 11%,transparent)}
-    body.constellation-theme .constellation-map:has(.constellation-branch[data-role="Product Creator"]:hover,.constellation-branch[data-role="Product Creator"]:focus-within) .constellation-line-product,body.constellation-theme .constellation-map:has(.constellation-branch[data-role="Marketing"]:hover,.constellation-branch[data-role="Marketing"]:focus-within) .constellation-line-marketing,body.constellation-theme .constellation-map:has(.constellation-branch[data-role="Sales"]:hover,.constellation-branch[data-role="Sales"]:focus-within) .constellation-line-sales{stroke-width:3;opacity:1}
-    body.constellation-theme .constellation-map:has(.constellation-branch[data-role="Product Creator"]:hover,.constellation-branch[data-role="Product Creator"]:focus-within) .constellation-line-product{filter:drop-shadow(0 0 4px rgba(183,57,39,.42))}
-    body.constellation-theme .constellation-map:has(.constellation-branch[data-role="Marketing"]:hover,.constellation-branch[data-role="Marketing"]:focus-within) .constellation-line-marketing{filter:drop-shadow(0 0 4px rgba(23,103,93,.42))}
-    body.constellation-theme .constellation-map:has(.constellation-branch[data-role="Sales"]:hover,.constellation-branch[data-role="Sales"]:focus-within) .constellation-line-sales{filter:drop-shadow(0 0 4px rgba(52,85,180,.4))}
     #cursor-glow{background:radial-gradient(340px circle at var(--pointer-x,-1000px) var(--pointer-y,-1000px),rgba(247,174,139,.23),rgba(153,198,183,.14) 34%,rgba(120,145,203,.055) 57%,transparent 78%);mix-blend-mode:soft-light;transition:opacity .2s ease}
     #cursor-glow.is-visible{opacity:1}
     @media(prefers-reduced-motion:reduce){body.constellation-theme .constellation-idea,body.constellation-theme .constellation-member{transition:none!important}}
   </style>
+  <style>__CONSTELLATION_CSS__</style>
 </head>
 <body class="constellation-theme">
   <div class="workspace-shell">
@@ -349,7 +288,7 @@ const PAGE = String.raw`<!doctype html>
       <header class="workspace-topbar"><div class="workspace-crumb"><span>OnlySkills</span><span aria-hidden="true">/</span><strong id="workspace-current-page">Teammates</strong></div><span id="workspace-identity" class="workspace-identity">Your venture workspace</span></header>
       <main class="container">
     <section id="overview-page" class="app-page" aria-labelledby="tab-overview" hidden>
-      <section class="hero"><div class="eyebrow">YOUR WORKSPACE</div><h1>Build something together.</h1><p>A clear view of your real team, your assigned work, and the goal workflow. Team and task details come from your current device profile.</p></section>
+      <section class="hero"><div class="eyebrow">YOUR WORKSPACE</div><h1><span>Build something</span><em>together.</em></h1><p>A clear view of your real team, your assigned work, and the goal workflow. Team and task details come from your current device profile.</p></section>
       <div class="overview-grid">
         <article class="overview-card"><span class="overview-card-label">Team status</span><strong id="overview-team-status">Loading</strong><p id="overview-team-note">Checking your matching profile.</p></article>
         <article class="overview-card"><span class="overview-card-label">Your position</span><strong id="overview-role">—</strong><p id="overview-identity-note">No saved profile loaded.</p></article>
@@ -359,21 +298,23 @@ const PAGE = String.raw`<!doctype html>
       <section class="overview-section" style="margin-top:12px"><h2>Goal workflow connection</h2><p id="overview-backend-status" class="overview-empty">Backend status is being checked.</p><p class="overview-empty">Goal results may use deterministic mock agents. Approving a recommendation only records your decision.</p><div class="overview-actions"><button class="primary" type="button" data-workspace-destination="agent">Open AI Workspace</button><button class="secondary" type="button" data-workspace-destination="deliverables">Look up existing results</button><button class="secondary" type="button" data-workspace-destination="books">Open shared bookkeeping</button></div></section>
     </section>
     <section id="matching-page" class="app-page" aria-labelledby="tab-matching">
-      <section class="hero agent-hero"><div class="eyebrow">ONLYSKILLS TEAM MATCHING</div><h1>Find your venture team.</h1><p>Share your role, skills, interests, goal, and availability. When a strong three-role team is found, everyone can review and accept the invitation.</p></section>
+      <section class="hero agent-hero"><div class="eyebrow">ONLYSKILLS TEAM MATCHING</div><h1><span>Find your</span><em>venture team.</em></h1><p>Share your role, skills, interests, goal, and availability. When a strong three-role team is found, everyone can review and accept the invitation.</p></section>
       <div class="matching-note"><strong>How this demo works:</strong> matching uses a profile-based scoring algorithm (skills, shared interests and goals, and availability), not a live AI model. Names and profiles are visible to visitors using this public link. One browser/device ID is one demo user; switching devices creates another identity.</div>
       <div id="matching-loading" class="loading"><span class="spinner"></span>Checking your matching profile…</div>
       <section id="matching-constellation-panel" class="constellation-panel" aria-labelledby="matching-constellation-title" hidden>
-        <header class="constellation-heading"><div><span class="eyebrow">YOUR TEAM CONSTELLATION</span><h2 id="matching-constellation-title" class="visually-hidden">Your venture team map</h2></div><p id="matching-constellation-caption">A live view of your profile, open roles, and confirmed teammates.</p></header>
-        <div id="matching-constellation" class="constellation-map" aria-live="polite"></div>
+        <header class="constellation-heading"><div><h2 id="matching-constellation-title">Your team constellation</h2><p id="matching-constellation-caption">A live view of your profile, open roles, and confirmed teammates.</p></div><button id="constellation-reset" class="secondary" type="button">Reset map</button></header>
+        <div id="matching-constellation" class="constellation-map"></div>
+        <div class="constellation-tools"><div class="constellation-scan-state"><span class="radar-status-mark" aria-hidden="true"></span><span id="constellation-scan-label">Add your profile to scan potential teammates</span></div><div class="constellation-tool-actions"><button id="constellation-motion" class="secondary" type="button" aria-pressed="false" hidden>Pause radar</button><button id="constellation-scan" class="secondary" type="button" hidden>Scan now</button></div></div>
+        <p id="constellation-help" class="constellation-help">Drag any node to arrange your map. With a node focused, use the arrow keys to move it.</p><span id="constellation-announcement" class="visually-hidden" aria-live="polite"></span>
       </section>
       <form id="matching-form" class="card matching-form" hidden>
         <div class="task-heading"><h3>Your matching profile</h3><span>All fields are required</span></div>
         <div class="form-grid">
           <label class="field"><span>Name</span><input name="displayName" maxlength="40" required autocomplete="given-name" placeholder="e.g. Amina"></label>
           <fieldset class="field field-wide role-picker"><legend>Choose your position</legend><div class="role-choice-grid">
-            <label class="role-choice"><input type="radio" name="role" value="Product Creator" required><span class="role-step">01 · MAKE</span><strong>Product Creator</strong><small>I have a product or making skills.</small></label>
-            <label class="role-choice"><input type="radio" name="role" value="Marketing" required><span class="role-step">02 · AMPLIFY</span><strong>Marketing</strong><small>I can promote ideas and attract customers.</small></label>
-            <label class="role-choice"><input type="radio" name="role" value="Sales" required><span class="role-step">03 · CONNECT</span><strong>Sales</strong><small>I can sell and talk with customers.</small></label>
+            <label class="role-choice"><input type="radio" name="role" value="Product Creator" required><span class="role-icon">__PRODUCT_ROLE_ICON__</span><span class="role-step">MAKE</span><strong>Product Creator</strong><small>I have a product or making skills.</small></label>
+            <label class="role-choice"><input type="radio" name="role" value="Marketing" required><span class="role-icon">__MARKETING_ROLE_ICON__</span><span class="role-step">AMPLIFY</span><strong>Marketing</strong><small>I can promote ideas and attract customers.</small></label>
+            <label class="role-choice"><input type="radio" name="role" value="Sales" required><span class="role-icon">__SALES_ROLE_ICON__</span><span class="role-step">CONNECT</span><strong>Sales</strong><small>I can sell and talk with customers.</small></label>
           </div></fieldset>
           <label class="field field-wide"><span>Your skills (comma separated)</span><input name="skills" maxlength="400" required placeholder="e.g. baking, recipe testing, packaging"></label>
           <label class="field field-wide"><span>Your interests (comma separated)</span><input name="interests" maxlength="400" required placeholder="e.g. food, student life, small business"></label>
@@ -406,7 +347,7 @@ const PAGE = String.raw`<!doctype html>
       <p class="footer-note">Every formal team is enforced by the backend: exactly three accepted people, one per required position.</p>
     </section>
     <section id="agent-page" class="app-page" aria-labelledby="tab-agent" hidden>
-      <section class="hero agent-hero"><div class="eyebrow">ONLYSKILLS GOAL WORKFLOW</div><h1>Turn a goal into a plan.</h1><p>Send a goal to the OnlySkills backend, review the returned agent results, then record whether you approve the recommendation.</p></section>
+      <section class="hero agent-hero"><div class="eyebrow">ONLYSKILLS GOAL WORKFLOW</div><h1><span>Turn a goal</span><em>into a plan.</em></h1><p>Send a goal to the OnlySkills backend, review the returned agent results, then record whether you approve the recommendation.</p></section>
       <section class="agent-backend-card" aria-live="polite"><div><span class="field-label">Backend connection</span><strong id="health-status" class="backend-status">Checking…</strong><p id="health-message">Checking the backend. Its free service may need time to wake.</p><p>API base: <code id="agent-api-base"></code></p></div><button id="health-retry" class="secondary" type="button">Check again</button></section>
       <div class="agent-demo-note"><strong>WorkBuddy workflow:</strong> Goals are queued for a connected WorkBuddy Desktop worker. The worker must be online to claim them. Creator profiles and sales/KPI figures may be synthetic demo data. Approval only records your decision; it does not perform an external action.</div>
       <form id="goal-form" class="card agent-form">
@@ -620,6 +561,7 @@ const PAGE = String.raw`<!doctype html>
       deviceId = crypto.randomUUID ? crypto.randomUUID() : "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (char) => { const rand = Math.random() * 16 | 0; return (char === "x" ? rand : rand & 3 | 8).toString(16); });
       try { localStorage.setItem("onlyskill-device", deviceId); } catch (_) {}
     }
+    __CONSTELLATION_SCRIPT__
     function showError(id, message) { const node = document.getElementById(id); node.textContent = message || ""; node.style.display = message ? "block" : "none"; }
 
     let currentMatchingState = null;
@@ -655,53 +597,7 @@ const PAGE = String.raw`<!doctype html>
     function matchingStatusLabel(status) {
       return ({invited:"Invitation waiting",accepted:"Accepted",rejected:"Rejected",cancelled:"Cancelled"})[status] || status || "Status unavailable";
     }
-    function renderMatchingConstellation(state) {
-      const panel = $("#matching-constellation-panel");
-      const host = $("#matching-constellation");
-      const profile = state.profile || null;
-      const team = state.team || null;
-      const members = Array.isArray(team?.members) ? team.members : [];
-      const counts = state.availableCounts || {};
-      const creatorGoal = members.find((member) => member.role === "Product Creator")?.businessGoal;
-      const idea = profile?.businessGoal || creatorGoal || members.find((member) => member.businessGoal)?.businessGoal || "";
-      const teamIsActive = team?.status === "active";
-      const caption = teamIsActive
-        ? "Three members have accepted: one Product Creator, one Marketing member, and one Sales member."
-        : team
-          ? "A possible team is connected. It becomes active after every member accepts the invitation."
-          : profile
-            ? "Your profile is saved. Open-position counts reflect profiles currently available for matching."
-            : "Choose a position and add your venture goal to begin matching.";
-      $("#matching-constellation-caption").textContent = caption;
-      const roles = [
-        { role: "Product Creator", code: "MAKE", short: "Build the product" },
-        { role: "Marketing", code: "AMPLIFY", short: "Reach customers" },
-        { role: "Sales", code: "CONNECT", short: "Talk with customers" },
-      ];
-      const branches = roles.map(({ role, code, short }) => {
-        const member = members.find((candidate) => candidate.role === role) || null;
-        const isYou = Boolean(profile && profile.role === role);
-        const ownProfileOnly = !team && isYou ? profile : null;
-        const visibleProfile = member || ownProfileOnly;
-        const available = Math.max(0, Number(counts[role]) || 0);
-        const name = visibleProfile?.name || (available ? available + " profile" + (available === 1 ? "" : "s") + " available" : "Open position");
-        const status = visibleProfile
-          ? (isYou ? (team ? "YOUR POSITION" : "YOUR SAVED PROFILE") : matchingStatusLabel(visibleProfile.invitationStatus))
-          : (available ? "MATCHING POOL" : "WAITING FOR A MATCH");
-        const detail = visibleProfile
-          ? (isYou && profile ? ((profile.skills || []).slice(0, 3).join(" · ") || short) + (profile.availabilityHours ? " · " + profile.availabilityHours + " hrs/week" : "") : "Real profile linked to this " + (team ? "team match." : "role."))
-          : (available ? "Potential profiles only; no teammate is named until a match is formed." : "No available profile is listed for this position yet.");
-        return '<article class="constellation-branch" data-role="' + escapeHTML(role) + '">' +
-          '<div class="constellation-orb"><span class="constellation-symbol" aria-hidden="true"><span></span></span><strong>' + escapeHTML(role) + '</strong><small>' + escapeHTML(code) + '</small></div>' +
-          '<div class="constellation-member"><small>' + escapeHTML(status) + '</small><strong>' + escapeHTML(name) + '</strong><p>' + escapeHTML(detail) + '</p></div>' +
-          '</article>';
-      }).join("");
-      const ideaContent = idea ? escapeHTML(idea) : "Your venture idea will appear here after you save a matching profile.";
-      const ideaNote = idea ? "The goal connecting this team." : "Add your business goal to show it here.";
-      host.innerHTML = '<svg class="constellation-lines" viewBox="0 0 1000 600" preserveAspectRatio="none" aria-hidden="true"><path class="constellation-line-product" d="M 180 140 C 300 145, 370 235, 500 300"/><path class="constellation-line-marketing" d="M 820 140 C 700 145, 630 235, 500 300"/><path class="constellation-line-sales" d="M 820 465 C 700 455, 640 365, 500 300"/><path class="constellation-orbit-trace" d="M 42 492 C 110 85, 703 26, 958 358"/></svg>' +
-        '<div class="constellation-idea"><span class="constellation-idea-mark" aria-hidden="true"><span></span></span><div><span class="eyebrow">YOUR VENTURE IDEA</span><strong>' + ideaContent + '</strong><p>' + escapeHTML(ideaNote) + '</p></div></div>' + branches;
-      panel.hidden = false;
-    }
+    function renderMatchingConstellation(state) { constellationUI.render(state); }
     function loadMatchingForm(profile) {
       if (!profile || matchingFormLoaded) return;
       const form = $("#matching-form");
@@ -1361,7 +1257,7 @@ function renderPage(env) {
     } catch (_) {}
   }
   const serializedApiBase = JSON.stringify(apiBaseUrl).replace(/[<>&]/g, (char) => ({"<":"\\u003c",">":"\\u003e","&":"\\u0026"}[char]));
-  return PAGE.replace("__AGENT_API_BASE_URL_JSON__", () => serializedApiBase).replace("__WORKBUDDY_LOOKUP_FUNCTION__", () => "(" + lookupWorkBuddyResults.toString() + ")").replace("__CHECKLIST_SCRIPT__", () => CHECKLIST_SCRIPT).replace("__BOOKS_CSS__", () => BOOKS_CSS).replace("__BOOKS_HTML__", () => BOOKS_HTML).replace("__BOOKS_SCRIPT__", () => BOOKS_SCRIPT);
+  return PAGE.replace("__AGENT_API_BASE_URL_JSON__", () => serializedApiBase).replace("__WORKBUDDY_LOOKUP_FUNCTION__", () => "(" + lookupWorkBuddyResults.toString() + ")").replace("__CHECKLIST_SCRIPT__", () => CHECKLIST_SCRIPT).replace("__BOOKS_CSS__", () => BOOKS_CSS).replace("__BOOKS_HTML__", () => BOOKS_HTML).replace("__BOOKS_SCRIPT__", () => BOOKS_SCRIPT).replace("__CONSTELLATION_CSS__", () => CONSTELLATION_CSS).replace("__CONSTELLATION_SCRIPT__", () => CONSTELLATION_SCRIPT).replace("__PRODUCT_ROLE_ICON__", () => ROLE_ICONS["Product Creator"]).replace("__MARKETING_ROLE_ICON__", () => ROLE_ICONS.Marketing).replace("__SALES_ROLE_ICON__", () => ROLE_ICONS.Sales);
 }
 
 function json(data, status = 200) {
@@ -1477,7 +1373,7 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     if (url.pathname.startsWith("/assets/")) {
-      const asset = serveBooksVendor(url.pathname, request.method);
+      const asset = serveDesignAsset(url.pathname, request.method) || serveBooksVendor(url.pathname, request.method);
       return asset || new Response("Asset not found. Build the app before previewing OCR.", {status:404});
     }
     if (url.pathname === "/" && request.method === "GET") return new Response(renderPage(env), { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store", "x-content-type-options": "nosniff", "referrer-policy": "strict-origin-when-cross-origin" } });

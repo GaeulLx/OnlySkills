@@ -17,7 +17,6 @@ assert.doesNotMatch(source, /Aisha K\.|Amir H\.|Priya N\./);
 assert.doesNotMatch(source, /Daniel Wong|Leo Chen|Aisha Rahman|Maya Tan|Noor Idris/, "reference screenshot names are not copied into real matching UI");
 assert.match(source, /#cursor-glow\{position:fixed/);
 assert.match(source, /window\.addEventListener\("pointermove"/);
-assert.match(source, /constellation-orbit-trace/);
 
 const worker = await import(pathToFileURL(resolve(root, "worker/index.js")).href + "?smoke=" + Date.now());
 const rows = [];

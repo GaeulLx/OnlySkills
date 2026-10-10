@@ -14,6 +14,8 @@ Matching uses deterministic profile similarity, not a live AI model. Detailed ta
 
 ## Matching workflow
 
+Teammates includes a movable venture mind map: drag the idea, role symbols, or member cards, or use arrow keys on a focused node. Connectors follow each move; layouts are saved only in the current browser, separately for compact and wide views. Reset map restores the arrangement. The radar runs only while a saved profile is opted in and waiting for a team; it reports actual available-profile counts, pauses when offscreen, and has a Pause radar control and reduced-motion support. Moving a node changes its display position only.
+
 The **Matching** tab is an additive, profile-based team matcher. Visitors submit their real demo profile (name, one role, skills, interests, business goal, hours, and availability slots). The Worker ranks only complete triples with exactly one Product Creator, one Marketing member, and one Sales member. Scoring combines role-skill fit and skill coverage (35%), shared interests (20%), goal similarity (30%), and availability (15%). The displayed component scores come from these submitted profiles; no sample members are created and no live LLM is claimed.
 
 The app saves proposals and decisions in D1. Each proposed team reserves three devices until everyone accepts or the team is rejected/cancelled. All three acceptances are required before activation; the D1 check constraint requires three role-acceptance flags, updated atomically. The same team gets a shared three-person group chat. Messages persist in D1, are limited to 1,000 characters, and are visible/sendable only to accepted members of that active team. Cancellation closes chat access and releases members; the initiating/rejecting device pauses until it resubmits.
@@ -56,6 +58,7 @@ Verification: `node tests/bookkeeping.mjs` tests actual SQLite migrations with a
 node scripts/build.mjs
 node scripts/validate.mjs
 node tests/smoke.mjs
+node tests/constellation.mjs
 node tests/matching.mjs
 node tests/bookkeeping.mjs
 ```
