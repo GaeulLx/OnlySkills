@@ -37,4 +37,4 @@ for (const path of ["/assets/tesseract-7.0.0.js", "/assets/tesseract-worker-7.0.
 }
 assert.doesNotMatch(source, /\/api\/reset/);
 assert.match(source, /Product Creator[\s\S]*Marketing[\s\S]*Sales/);
-console.log("OnlySkill Worker artifact is valid and declares its shared D1 database.");
+console.log("OnlySkills Worker artifact is valid and declares its shared D1 database.");

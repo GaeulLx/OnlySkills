@@ -134,7 +134,7 @@ assert.match(html, /Your 3-person group/);
 assert.match(html, /\/api\/matching\/task-step/);
 assert.match(html, /\/api\/matching\/message/);
 assert.match(html, /const AGENT_API_BASE_URL = "https:\/\/onlyskills\.onrender\.com"/);
-for (const endpoint of ["/api/health", "/api/goal", "/api/approve"]) assert.ok(html.includes(endpoint), `agent workflow calls ${endpoint}`);
+for (const endpoint of ["/api/health", "/api/chat", "response.statusUrl", "/api/approve"]) assert.ok(html.includes(endpoint), `agent workflow calls ${endpoint}`);
 for (const agent of ["businessAnalyst", "growth", "teamBuilder", "operations", "feedback"]) assert.ok(html.includes(agent), `agent workflow renders ${agent}`);
 assert.match(html, /FRONTEND_ORIGIN=/);
 const clientScript = html.match(/<script>([\s\S]*?)<\/script>/)?.[1];
@@ -230,4 +230,4 @@ result = await call("/api/state?device=" + ids[0]);
 assert.equal(result.data.count, 0, "idle demo data expires");
 assert.equal(messages.length, 0, "group messages expire with their team");
 
-console.log("OnlySkill shared-team API, goal-workflow shell, and WorkBuddy results lookup smoke checks passed.");
+console.log("OnlySkills shared-team API, goal-workflow shell, and WorkBuddy results lookup smoke checks passed.");

@@ -354,4 +354,4 @@ assert.equal(expiredLegacyState.data.count, 0);
 assert.equal(legacyDb.sqlite.prepare("SELECT COUNT(*) AS count FROM demo_group_messages").get().count, 0, "the legacy chat expires with its team");
 
 for (const database of [db,backfillDb,rejectionDb,guardDb,legacyDb]) database.sqlite.close();
-console.log("OnlySkill matching, personal microtask privacy, persistence, phase progress, legacy backfill, team lifecycle, and strict constraint checks passed.");
+console.log("OnlySkills matching, personal microtask privacy, persistence, phase progress, legacy backfill, team lifecycle, and strict constraint checks passed.");

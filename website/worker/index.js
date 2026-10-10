@@ -31,7 +31,7 @@ const PAGE = String.raw`<!doctype html>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#ebe5dc">
   <meta name="description" content="Join a three-person student venture team and get clear role-based tasks.">
-  <title>OnlySkill — Venture workspace</title>
+  <title>OnlySkills — Venture workspace</title>
   <style>
     :root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;color:#173c36;background:#f5f6f0;font-synthesis:none;text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased;--green:#173c36;--muted:#64736e;--line:#dce3dc;--peach:#ffb38e;--cream:#fffefa;--soft:#e9f1ec}
     *{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 10% 0%,#e7eee6 0,transparent 42%),#f5f6f0}button,input{font:inherit}button{cursor:pointer}button:disabled{cursor:not-allowed;opacity:.52}.topbar{height:70px;max-width:1080px;margin:auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between}.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:1.05rem}.brand-mark{width:34px;height:34px;display:grid;place-items:center;border-radius:11px;background:var(--green);color:var(--peach);font-size:1.1rem}.top-tag,.eyebrow{font-size:.68rem;letter-spacing:.12em;font-weight:800;color:#64736e}.top-tag{border:1px solid var(--line);border-radius:999px;padding:8px 11px}.container{max-width:860px;margin:0 auto;padding:24px 24px 64px}.hero{padding:30px 0 24px}.hero .eyebrow{color:#648073}.hero h1{font-family:Georgia,serif;font-size:clamp(2.4rem,7vw,4rem);line-height:.98;letter-spacing:-.045em;margin:14px 0 14px;max-width:670px}.hero p{color:var(--muted);font-size:1rem;line-height:1.55;max-width:540px;margin:0}.progress-card{padding:16px 18px;background:#edf1e9;border:1px solid #dfe7dc;border-radius:16px;margin:0 0 16px}.progress-line{display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:.82rem;font-weight:700}.progress-line span:last-child{color:var(--muted);font-size:.74rem}.progress-track{height:6px;border-radius:99px;background:#d9e2d8;margin-top:11px;overflow:hidden}.progress-fill{height:100%;background:#56816f;border-radius:inherit;transition:width .25s}.card{border:1px solid var(--line);background:var(--cream);border-radius:20px;padding:22px;box-shadow:0 12px 35px rgba(29,57,47,.045)}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:17px}.field{display:block}.field-wide{grid-column:1/-1}.field>span,.field-label{display:block;font-size:.78rem;font-weight:750;margin-bottom:7px}.field input{width:100%;height:46px;border:1px solid #ccd8cf;border-radius:11px;background:#fff;padding:0 12px;color:var(--green);outline:none}.field input:focus{border-color:#55816f;box-shadow:0 0 0 3px rgba(85,129,111,.12)}.role-label{font-size:.78rem;font-weight:750;margin:20px 0 9px}.role-options{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.role-option{min-height:110px;text-align:left;padding:12px;border:1px solid var(--line);border-radius:13px;background:#fff;color:var(--green);transition:.15s}.role-option:hover:not(:disabled){transform:translateY(-2px);border-color:#8fa99a}.role-option.selected{border:2px solid #376d5b;background:#f0f6f1;padding:11px}.role-option .symbol{font-size:1.05rem;color:#729280}.role-option strong,.role-option small{display:block}.role-option strong{font-size:.78rem;margin:8px 0 4px}.role-option small{font-size:.68rem;color:var(--muted);line-height:1.35}.role-option .slot-state{font-size:.63rem;color:#789083;margin-top:7px;font-weight:700}.product-field{margin-top:16px}.join-actions{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:18px}.primary,.secondary{border:0;border-radius:12px;padding:12px 16px;font-weight:750}.primary{background:var(--green);color:white}.primary:hover:not(:disabled){background:#235348}.secondary{background:#edf2ed;color:var(--green)}.fine-print{font-size:.7rem;color:var(--muted);line-height:1.5;max-width:420px}.notice{border:1px solid #e3e8dd;background:#f0f2e9;border-radius:14px;padding:13px 15px;color:#586a62;font-size:.73rem;line-height:1.5;margin-top:16px}.notice strong{color:var(--green)}.status-box{display:flex;align-items:flex-start;gap:12px;background:#edf4ef;border:1px solid #d5e4d8;border-radius:16px;padding:16px;margin-top:16px}.status-icon{width:31px;height:31px;display:grid;place-items:center;border-radius:10px;background:#dbeadf;font-weight:800}.status-box h2{font-size:.95rem;margin:0 0 4px}.status-box p{margin:0;color:var(--muted);font-size:.78rem;line-height:1.45}.member-slots{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:16px}.slot{border:1px solid var(--line);background:#fff;border-radius:12px;padding:12px}.slot small,.slot strong{display:block}.slot small{font-size:.63rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:800}.slot strong{font-size:.78rem;margin-top:6px}.slot.waiting strong{color:#87938b;font-weight:600}.matched-head{display:flex;align-items:flex-start;gap:13px;margin-bottom:18px}.matched-check{width:38px;height:38px;display:grid;place-items:center;flex:none;border-radius:13px;background:#dff0e2;color:#296648;font-weight:900}.matched-head h2{font-family:Georgia,serif;font-size:1.8rem;line-height:1.05;margin:0 0 6px}.matched-head p{color:var(--muted);margin:0;font-size:.82rem}.matched-product{background:#f4f2e8;border-radius:12px;padding:12px 14px;margin-bottom:14px;font-size:.78rem}.matched-product strong{display:block;font-size:.62rem;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin-bottom:4px}.member-list{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:21px}.member{border:1px solid var(--line);border-radius:12px;padding:12px;background:#fff}.member small{font-size:.64rem;color:#668175;font-weight:800;text-transform:uppercase}.member strong{display:block;font-size:.84rem;margin-top:6px}.task-heading{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:10px}.task-heading h3{font-size:1rem;margin:0}.task-heading span{font-size:.67rem;color:var(--muted)}.task-list{display:grid;gap:9px}.task{border:1px solid var(--line);border-radius:14px;background:#fff;padding:14px}.task-top{display:flex;gap:10px;align-items:flex-start}.task-check{width:22px;height:22px;flex:none;display:grid;place-items:center;border:1.5px solid #b7c9bd;border-radius:7px;color:#628371;font-size:.7rem}.task h4{margin:1px 0 5px;font-size:.82rem}.task-owner{font-size:.67rem;color:#668175;font-weight:750}.task ol{padding-left:32px;margin:10px 0 0;color:var(--muted);font-size:.72rem;line-height:1.65}.result-actions{display:flex;justify-content:flex-end;margin-top:16px}.error{display:none;padding:11px 13px;background:#fff0eb;color:#9c4a30;border-radius:11px;font-size:.77rem;margin-top:13px}.loading{padding:24px 0;color:var(--muted);font-size:.85rem}.footer-note{text-align:center;color:#849189;font-size:.67rem;margin-top:24px}.spinner{width:14px;height:14px;border:2px solid #c8d7cb;border-top-color:#3c745e;border-radius:50%;animation:spin .7s linear infinite;display:inline-block;vertical-align:middle;margin-right:7px}@keyframes spin{to{transform:rotate(360deg)}}[hidden]{display:none!important}
@@ -66,6 +66,10 @@ const PAGE = String.raw`<!doctype html>
     .agent-meta dt{font-size:.7rem;font-weight:800;color:#668175}
     .agent-meta dd{margin:0;min-width:0;font-size:.76rem;line-height:1.5;overflow-wrap:anywhere}
     .agent-results{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .agent-progress-events{display:grid;gap:9px;padding:0;margin:12px 0 0;list-style:none}
+    .agent-progress-events li:not(.agent-empty){display:grid;grid-template-columns:auto 1fr auto;align-items:start;gap:8px;border-top:1px solid var(--line);padding-top:9px;color:#42574d;font-size:.74rem;line-height:1.45}
+    .agent-progress-events li strong{font-size:.66rem;color:#668175}
+    .agent-progress-events li time{color:var(--muted);font-size:.65rem;white-space:nowrap}
     .agent-result{min-width:0;border:1px solid var(--line);border-radius:14px;background:#fffefa;padding:14px}
     .agent-result h4{margin:0;font-size:.84rem;overflow-wrap:anywhere}
     .agent-result-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px}
@@ -321,8 +325,8 @@ const PAGE = String.raw`<!doctype html>
 <body class="constellation-theme">
   <div class="workspace-shell">
     <aside class="workspace-sidebar" aria-label="Workspace navigation">
-      <a class="workspace-brand" href="#matching-page"><span class="workspace-brand-mark">O</span><span><strong>OnlySkill</strong><small>A SPACE FOR POSSIBILITY</small></span></a>
-      <nav class="workspace-nav" aria-label="OnlySkill workspace">
+      <a class="workspace-brand" href="#matching-page"><span class="workspace-brand-mark">O</span><span><strong>OnlySkills</strong><small>A SPACE FOR POSSIBILITY</small></span></a>
+      <nav class="workspace-nav" aria-label="OnlySkills workspace">
         <div class="workspace-nav-group">
           <span class="workspace-nav-group-label">WORKSPACE</span>
           <button id="tab-overview" class="workspace-nav-link app-tab" type="button" aria-controls="overview-page"><span class="workspace-nav-icon" aria-hidden="true">⌂</span>Overview</button>
@@ -342,7 +346,7 @@ const PAGE = String.raw`<!doctype html>
       </nav>
     </aside>
     <div class="workspace-main">
-      <header class="workspace-topbar"><div class="workspace-crumb"><span>OnlySkill</span><span aria-hidden="true">/</span><strong id="workspace-current-page">Teammates</strong></div><span id="workspace-identity" class="workspace-identity">Your venture workspace</span></header>
+      <header class="workspace-topbar"><div class="workspace-crumb"><span>OnlySkills</span><span aria-hidden="true">/</span><strong id="workspace-current-page">Teammates</strong></div><span id="workspace-identity" class="workspace-identity">Your venture workspace</span></header>
       <main class="container">
     <section id="overview-page" class="app-page" aria-labelledby="tab-overview" hidden>
       <section class="hero"><div class="eyebrow">YOUR WORKSPACE</div><h1>Build something together.</h1><p>A clear view of your real team, your assigned work, and the goal workflow. Team and task details come from your current device profile.</p></section>
@@ -404,7 +408,7 @@ const PAGE = String.raw`<!doctype html>
     <section id="agent-page" class="app-page" aria-labelledby="tab-agent" hidden>
       <section class="hero agent-hero"><div class="eyebrow">ONLYSKILLS GOAL WORKFLOW</div><h1>Turn a goal into a plan.</h1><p>Send a goal to the OnlySkills backend, review the returned agent results, then record whether you approve the recommendation.</p></section>
       <section class="agent-backend-card" aria-live="polite"><div><span class="field-label">Backend connection</span><strong id="health-status" class="backend-status">Checking…</strong><p id="health-message">Checking the backend. Its free service may need time to wake.</p><p>API base: <code id="agent-api-base"></code></p></div><button id="health-retry" class="secondary" type="button">Check again</button></section>
-      <div class="agent-demo-note"><strong>Demo data:</strong> Results come from the backend and may use deterministic mock agents. Creator profiles and sales/KPI figures are demo data, not verified people or live business results. Approval only records your decision; it does not perform an external action.</div>
+      <div class="agent-demo-note"><strong>WorkBuddy workflow:</strong> Goals are queued for a connected WorkBuddy Desktop worker. The worker must be online to claim them. Creator profiles and sales/KPI figures may be synthetic demo data. Approval only records your decision; it does not perform an external action.</div>
       <form id="goal-form" class="card agent-form">
         <div class="task-heading"><h3>Describe your goal</h3><span>Goal is required</span></div>
         <div class="form-grid">
@@ -414,7 +418,7 @@ const PAGE = String.raw`<!doctype html>
           <label class="field field-wide"><span>Product description</span><textarea name="productDescription" rows="2" maxlength="500" placeholder="Optional"></textarea></label>
           <label class="field field-wide"><span>Target customer</span><input name="targetCustomer" maxlength="300" placeholder="Optional"></label>
         </div>
-        <div class="join-actions"><button id="goal-submit" class="primary" type="submit">Run goal workflow</button><span class="agent-submit-copy">The first request can take up to two minutes while Render wakes. If it times out, you can retry.</span></div>
+        <div class="join-actions"><button id="goal-submit" class="primary" type="submit">Run goal workflow</button><span class="agent-submit-copy">Your goal is queued immediately. WorkBuddy Desktop must be connected and running its worker task to process it.</span></div>
         <div id="goal-error" class="error" role="alert"></div>
         <button id="goal-retry" class="secondary agent-retry" type="button" hidden>Retry goal request</button>
       </form>
@@ -422,9 +426,10 @@ const PAGE = String.raw`<!doctype html>
         <section class="card">
           <div class="agent-run-heading"><div><span class="eyebrow">BACKEND RUN</span><h2>Run <span id="run-id"></span></h2></div><span id="run-status" class="agent-status-pill">Status not returned yet</span></div>
           <dl class="agent-meta"><dt>Provider</dt><dd id="run-provider">Not returned by backend</dd><dt>Provider note</dt><dd id="run-provider-note">Not returned by backend</dd></dl>
-          <div class="agent-refresh-row"><span id="run-refresh-message" class="agent-meta-label">Status and results are fetched from the URLs returned by the backend.</span><button id="refresh-agent-run" class="secondary" type="button">Refresh status &amp; results</button></div>
+          <div class="agent-refresh-row"><span id="run-refresh-message" class="agent-meta-label">Updates appear automatically while this page is open.</span><button id="refresh-agent-run" class="secondary" type="button">Refresh status</button></div>
           <div id="run-error" class="error" role="alert"></div>
         </section>
+        <section class="card" aria-live="polite"><div class="agent-section-heading"><h3>WorkBuddy progress</h3><span>Updates from the worker</span></div><p id="run-worker-hint" class="agent-meta-label">OnlySkills will show progress after WorkBuddy claims the goal.</p><ol id="run-progress-events" class="agent-progress-events"><li class="agent-empty">Waiting for the first update.</li></ol></section>
         <section>
           <div class="agent-section-heading"><h3>Agent results</h3><span>Fields shown exactly as returned</span></div>
           <div id="agent-results" class="agent-results"></div>
@@ -506,6 +511,9 @@ const PAGE = String.raw`<!doctype html>
     let workBuddyLookupBusy = false;
     let agentRefreshBusy = false;
     let agentDecisionBusy = false;
+    let agentPollTimer = null;
+    const AGENT_POLL_INTERVAL_MS = 2500;
+    const TERMINAL_AGENT_STATUSES = new Set(["awaiting_approval", "approved", "rejected", "failed"]);
 
     function apiURL(path) {
       const base = new URL(AGENT_API_BASE_URL);
@@ -979,6 +987,8 @@ const PAGE = String.raw`<!doctype html>
       const label = activeNav?.textContent.trim() || ({overview:"Overview",matching:"Teammates",agent:"AI Workspace",books:"Bookkeeping"})[tabName];
       $("#workspace-current-page").textContent = label;
       if (matchingSelected) refreshMatching();
+      if (tabName === "agent" && currentAgentRun) refreshAgentRun({automatic:true});
+      else clearAgentPoll();
       if (tabName === "books") document.dispatchEvent(new Event("books-open"));
       if (scrollTargetId) setTimeout(() => {
         const target = $("#" + scrollTargetId);
@@ -1050,6 +1060,24 @@ const PAGE = String.raw`<!doctype html>
       const recommendation = firstReturnedField([run.resultsData, run.statusData, run.goalResponse], "recommendation");
       if (recommendation !== undefined) run.recommendation = recommendation;
       $("#recommendation-content").innerHTML = renderApiFields(run.recommendation, "No recommendation has been returned yet.");
+      const events = Array.isArray(run.statusData?.events) ? run.statusData.events : [];
+      const eventList = $("#run-progress-events");
+      eventList.innerHTML = events.length ? events.map((entry) => {
+        const source = entry?.source === "workbuddy" ? "WorkBuddy" : "OnlySkills";
+        const detail = entry?.detail || entry?.step || "Progress update";
+        const when = entry?.at ? new Date(entry.at).toLocaleTimeString() : "";
+        return '<li><strong>' + escapeHTML(source) + '</strong><span>' + escapeHTML(entry?.step || "Update") + ': ' + escapeHTML(detail) + '</span>' + (when ? '<time>' + escapeHTML(when) + '</time>' : '') + '</li>';
+      }).join("") : '<li class="agent-empty">Waiting for the first update.</li>';
+      const normalizedStatus = String(overallStatus || "").toLowerCase();
+      const hints = {
+        queued: "Your goal is in the queue. WorkBuddy will start when its worker is connected and waiting.",
+        running: "WorkBuddy has claimed the goal. This page checks for progress automatically.",
+        awaiting_approval: "WorkBuddy has submitted results. Review them below and choose Approve or Reject.",
+        approved: "You approved the recommendation.",
+        rejected: "You rejected the recommendation.",
+        failed: "The workflow stopped before completion. See the error above and submit again if needed."
+      };
+      $("#run-worker-hint").textContent = hints[normalizedStatus] || "OnlySkills will show progress after WorkBuddy claims the goal.";
       const actionId = run.recommendation && typeof run.recommendation === "object" ? run.recommendation.actionId : undefined;
       const canDecide = actionId !== undefined && actionId !== null && String(actionId).length > 0 && !run.decisionRecorded;
       $("#approve-recommendation").disabled = !canDecide || agentDecisionBusy;
@@ -1057,31 +1085,49 @@ const PAGE = String.raw`<!doctype html>
       $("#refresh-agent-run").disabled = agentRefreshBusy;
     }
 
-    async function refreshAgentRun() {
+    function clearAgentPoll() {
+      if (agentPollTimer) clearTimeout(agentPollTimer);
+      agentPollTimer = null;
+    }
+    function scheduleAgentPoll(run) {
+      clearAgentPoll();
+      if (!run || run !== currentAgentRun || $("#agent-page").hidden) return;
+      const status = String(run.statusData?.status || run.goalResponse?.status || "").toLowerCase();
+      if (TERMINAL_AGENT_STATUSES.has(status)) return;
+      agentPollTimer = setTimeout(() => refreshAgentRun({automatic:true}), AGENT_POLL_INTERVAL_MS);
+    }
+    async function refreshAgentRun(options = {}) {
       if (!currentAgentRun || agentRefreshBusy) return;
       const run = currentAgentRun;
-      if (!run.statusUrl || !run.resultsUrl) {
-        showError("run-error", "The goal response did not include both statusUrl and resultsUrl.");
+      if (!run.statusUrl) {
+        showError("run-error", "The backend did not return a status URL for this goal.");
         return;
       }
+      clearAgentPoll();
       agentRefreshBusy = true;
-      $("#run-refresh-message").textContent = "Loading status and results…";
+      if (!options.automatic) $("#run-refresh-message").textContent = "Checking the queue…";
       showError("run-error", "");
       renderAgentRun();
-      const [statusResult, resultsResult] = await Promise.allSettled([
-        Promise.resolve().then(() => requestAgentJSON(apiURL(run.statusUrl))),
-        Promise.resolve().then(() => requestAgentJSON(apiURL(run.resultsUrl))),
-      ]);
-      const errors = [];
-      if (statusResult.status === "fulfilled") run.statusData = statusResult.value;
-      else errors.push("Status request: " + (statusResult.reason?.message || "failed."));
-      if (resultsResult.status === "fulfilled") run.resultsData = resultsResult.value;
-      else errors.push("Results request: " + (resultsResult.reason?.message || "failed."));
-      renderAgentRun();
-      showError("run-error", errors.join(" "));
-      $("#run-refresh-message").textContent = errors.length ? "Some run data could not be loaded. Retry when the backend is ready." : "Status and results refreshed from the returned backend URLs at " + new Date().toLocaleTimeString() + ".";
-      agentRefreshBusy = false;
-      renderAgentRun();
+      try {
+        run.statusData = await requestAgentJSON(apiURL(run.statusUrl));
+        run.resultsData = run.statusData?.result || null;
+        if (run.statusData?.recommendation) run.recommendation = run.statusData.recommendation;
+        renderAgentRun();
+        const status = String(run.statusData?.status || "").toLowerCase();
+        $("#run-refresh-message").textContent = status === "queued"
+          ? "Goal queued in OnlySkills. Waiting for the WorkBuddy worker."
+          : status === "running"
+            ? "WorkBuddy is working. Checking for the next update automatically."
+            : "Latest run update received at " + new Date().toLocaleTimeString() + ".";
+        if (status === "failed") showError("run-error", run.statusData.error || "The workflow failed before producing results.");
+      } catch (error) {
+        showError("run-error", error.message || "Could not refresh this run. The page will retry automatically.");
+        $("#run-refresh-message").textContent = "Could not reach the run status. Retrying automatically while this page stays open.";
+      } finally {
+        agentRefreshBusy = false;
+        renderAgentRun();
+        scheduleAgentPoll(run);
+      }
     }
     $("#refresh-agent-run").addEventListener("click", refreshAgentRun);
 
@@ -1190,26 +1236,33 @@ const PAGE = String.raw`<!doctype html>
       showError("decision-error", "");
       $("#decision-result").hidden = true;
       try {
-        const response = await requestAgentJSON(apiURL("/api/goal"), {
+        const messageParts = ["Goal: " + payload.goal];
+        if (payload.productDescription) messageParts.push("Product description: " + payload.productDescription);
+        if (payload.targetCustomer) messageParts.push("Target customer: " + payload.targetCustomer);
+        const queuePayload = {message:messageParts.join("\n")};
+        if (payload.budget !== undefined) queuePayload.budget = payload.budget;
+        if (payload.currency) queuePayload.currency = payload.currency;
+        const response = await requestAgentJSON(apiURL("/api/chat"), {
           method:"POST",
           headers:{"content-type":"application/json","accept":"application/json"},
-          body:JSON.stringify(payload),
+          body:JSON.stringify(queuePayload),
         });
-        if (!response || typeof response !== "object" || response.runId === undefined || response.runId === null) {
-          throw new Error("The goal response did not include a runId. Check the backend response and retry if needed.");
+        if (!response || typeof response !== "object" || response.runId === undefined || response.runId === null || typeof response.statusUrl !== "string") {
+          throw new Error("The queue response did not include a runId and status URL. Check the backend response and retry if needed.");
         }
         currentAgentRun = {
           runId:response.runId,
           statusUrl:response.statusUrl,
           resultsUrl:response.resultsUrl,
-          recommendation:response.recommendation,
-          goalResponse:response,
+          recommendation:null,
+          goalResponse:{...response,provider:"workbuddy_mcp",providerNote:response.message || "Queued for WorkBuddy Desktop to process."},
           statusData:null,
           resultsData:null,
           decisionRecorded:false,
         };
         lastGoalPayload = null;
         $("#agent-run-panel").hidden = false;
+        $("#run-refresh-message").textContent = "Goal queued in OnlySkills. Waiting for the WorkBuddy worker.";
         renderAgentRun();
         await refreshAgentRun();
       } catch (error) {
@@ -1275,6 +1328,7 @@ const PAGE = String.raw`<!doctype html>
         result.classList.remove("error-result");
         result.hidden = false;
         run.decisionRecorded = true;
+        if (run.statusData) run.statusData = {...run.statusData,status:response?.status || (approved ? "approved" : "rejected")};
       } catch (error) {
         showError("decision-error", error.message || "Could not record the decision. Please retry.");
       } finally {

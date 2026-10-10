@@ -1,4 +1,4 @@
-# OnlySkill
+# OnlySkills
 
 A minimal three-phone venture matcher with personal task plans, a goal workflow, and receipt bookkeeping.
 
@@ -30,13 +30,13 @@ To test matching locally, run `node tests/matching.mjs`. It executes the additiv
 
 ## Goal workflow
 
-The **Goal workflow** tab is an additional page in the same Worker-served app. It calls the OnlySkills API directly from the browser: `GET /api/health`, `POST /api/goal`, the returned status and results URLs, and `POST /api/approve`. It does not use a proxy or send credentials.
+The **Goal workflow** tab is an additional page in the same Worker-served app. It calls the OnlySkills API directly from the browser: `GET /api/health`, `POST /api/chat` to queue a goal for WorkBuddy Desktop, `GET /api/runs/:runId` for status/progress/results, and `POST /api/approve` for the user decision. While the Goal workflow page is open, status is checked every 2.5 seconds; polling pauses when the user leaves that page and stops at approval, rejection, or failure. It does not use a proxy or send credentials.
 
-The Worker runtime variable `ONLYSKILLS_API_BASE_URL` can override the API origin. When unset, the app uses `https://onlyskills.onrender.com`. Do not put API keys or service-account credentials in the browser. The UI shows the backend's `provider` and `providerNote`; creator profiles and sales/KPI values are demo data, and approval only records a decision.
+The Worker runtime variable `ONLYSKILLS_API_BASE_URL` can override the API origin. When unset, the app uses `https://onlyskills.onrender.com`. Do not put API keys or service-account credentials in the browser. A goal stays queued until the WorkBuddy Desktop MCP worker claims it. The progress panel displays backend events and labels an event as WorkBuddy only when the backend marks its source as `workbuddy`. Creator profiles and sales/KPI values may be synthetic demo data, and approval only records a decision.
 
 If the browser reports a CORS error, set the Render service's `FRONTEND_ORIGIN` to the deployed frontend origin: `https://onlyskill-student-ventures.li895.chatgpt.site`.
 
-To verify, open **Goal workflow**, wait for the health status, submit a goal (only Goal is required), then review the run status, all five returned agent cards, and recommendation. Use **Approve** or **Reject** and confirm the response status/message. Matching is the default tab; Bookkeeping remains available.
+To verify, open **Goal workflow**, wait for the health status, submit a goal (only Goal is required), and confirm it first appears as queued. With the WorkBuddy Desktop worker active, watch its progress events, then review the five agent cards and recommendation. Use **Approve** or **Reject** and confirm the response status/message. Matching is the default tab; Bookkeeping remains available.
 
 The same page also has **View WorkBuddy results** for an existing `runId`. It makes a direct `GET /api/results?runId=...` to the configured API origin and renders the returned goal, five agent results, recommendation, artifact titles/locations, and validation status. A missing ID is rejected locally; an unknown ID gets a not-found message. This lookup never calls `POST /api/goal` and sends no MCP bearer token. `node tests/smoke.mjs` covers a successful lookup response and an unknown ID.
 
@@ -46,7 +46,7 @@ The additive **Bookkeeping** tab adapts the MIT-licensed [Receipt Scanner](https
 
 Bookkeeping offers only **Shared team books** in the interface. Once a complete team is available, each transaction saved there—including its note and receipt—is visible to all three current team members. The ledger identifies the contributor by name and role and shows per-member income, expenses, and balance, grouped by currency (no conversion). Each member can void only their own entries. Existing personal entries are retained but are not shown or moved into the shared team ledger. Upload JPG/PNG/WebP/PDF up to 8 MB (PDF extraction supports up to 8 pages), review the suggested merchant/date/total, select income/expense, confirm the fields, and save. PDFs use native text or page OCR; no fabricated values are inserted when extraction fails. You can also enter a transaction manually. D1 stores reviewed cashbook entries and R2 `BUCKET` stores attachments. CSV export includes the audit status; voiding an owned entry preserves its row but removes it from totals. There is no invented conversion, double-entry accounting, tax filing, or bank connection.
 
-Bookkeeping requests carry a random browser capability key bound to the existing device ID; only its hash is stored by the Worker. Keep the original browser storage to retain access. This is still demo identity, not verified account authentication; do not store sensitive financial receipts. Team scopes are available only to current members of complete teams, and cancellation/idle expiry closes access to that group's ledger and receipts. OCR runs on-device. Library/worker assets are served from OnlySkill; the pinned Tesseract WASM and language models download from the upstream public CDN without sending receipt images.
+Bookkeeping requests carry a random browser capability key bound to the existing device ID; only its hash is stored by the Worker. Keep the original browser storage to retain access. This is still demo identity, not verified account authentication; do not store sensitive financial receipts. Team scopes are available only to current members of complete teams, and cancellation/idle expiry closes access to that group's ledger and receipts. OCR runs on-device. Library/worker assets are served from OnlySkills; the pinned Tesseract WASM and language models download from the upstream public CDN without sending receipt images.
 
 Verification: `node tests/bookkeeping.mjs` tests actual SQLite migrations with a private in-memory R2 fixture, authorization, exact cents, upload checks, review validation, idempotent retries, team membership/expiry, CSV escaping, and void audit. Legacy routes and current Matching checks must also pass.
 

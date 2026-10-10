@@ -1,4 +1,4 @@
-# OnlySkill demo acceptance matrix
+# OnlySkills demo acceptance matrix
 
 Use this as a release gate for the local, static demonstration. `P0` blocks the core loop; `P1` is required for a credible initial demo. Record evidence as a screenshot, stored-state excerpt, or exact observed value—never as “looks OK.”
 
@@ -42,7 +42,7 @@ Use this as a release gate for the local, static demonstration. `P0` blocks the 
 | D05 | P0 | Submitted reports and historical plans are append-only from normal UI flows; corrections create a visible revision/audit entry rather than silent mutation. | Record the original period, correct it if supported, and confirm both original/revision provenance. |
 | D06 | P0 | Edits propagate consistently across relevant pages and derived totals recompute from records, not duplicated constants. | Change actual packaging cost RM15 → RM18; every total changes by exactly RM3. |
 | D07 | P0 | Local persistence survives reload and browser restart where localStorage is supported. A documented reset path clears only the demo app’s namespaced data. | Save mid-flow, reload, close/reopen, then reset; verify both retention and clean first-run state. |
-| D08 | P1 | Corrupt, missing, or older stored data fails safely to a recoverable empty/default state without deleting unrelated localStorage keys. | Preserve a sentinel key, corrupt the OnlySkill value, reload, recover/reset, and confirm the sentinel remains. |
+| D08 | P1 | Corrupt, missing, or older stored data fails safely to a recoverable empty/default state without deleting unrelated localStorage keys. | Preserve a sentinel key, corrupt the OnlySkills value, reload, recover/reset, and confirm the sentinel remains. |
 | D09 | P0 | The UI prominently states: local demo, sample profiles/data, rule-based or simulated AI, no real multi-user collaboration, and no real invitations/messages/external publishing. | Verify the disclosure is visible before or within each affected workflow, not hidden only in source/comments. |
 | D10 | P0 | AI output is never described as a real model/API result unless such a service is actually connected. External action buttons clearly describe their demo/manual behavior. | Search visible copy for claims such as “AI contacted…” or “published”; none may be unverified. |
 | D11 | P1 | No client-side secrets/API keys exist. AI/matching logic is separated enough to replace with a service later, and storage/calculation failures yield an honest error state. | Inspect source and simulate unavailable/corrupt storage; confirm no credential and a recoverable message. |

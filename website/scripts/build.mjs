@@ -27,4 +27,4 @@ assets["/assets/bookkeeping-licenses.txt"] = {body:(await Promise.all(licensePat
 await writeFile(resolve(outputRoot, "server/books-vendor.js"), `const assets = ${JSON.stringify(assets)};\nexport function serveBooksVendor(path, method = 'GET') {\nconst asset = assets[path];\nif (!asset || !['GET','HEAD'].includes(method)) return null;\nreturn new Response(method === 'HEAD' ? null : asset.body, {headers:{'content-type':asset.contentType,'cache-control':'public, max-age=31536000, immutable','x-content-type-options':'nosniff'}});\n}\n`);
 await copyFile(resolve(projectRoot, ".openai/hosting.json"), resolve(outputRoot, ".openai/hosting.json"));
 await cp(resolve(projectRoot, "drizzle"), resolve(outputRoot, ".openai/drizzle"), { recursive: true });
-console.log("Built the OnlySkill Worker with pinned receipt OCR/PDF assets.");
+console.log("Built the OnlySkills Worker with pinned receipt OCR/PDF assets.");
