@@ -1,6 +1,16 @@
-# OnlySkills backend (mock-first)
+# OnlySkills backend
 
-This is a small Node.js/Express API for the hackathon demo. Deterministic mock agents remain the default. An optional CodeBuddy Agent SDK provider can generate the Business Analyst result when explicitly selected; the other agents remain deterministic mocks. This is a documented CodeBuddy runtime integration, not a call to the current WorkBuddy desktop conversation. Your account's edition, entitlement, runtime, and authentication still need confirmation. Tencent Docs document creation/read/write uses separate APIs and permissions and is not connected here.
+This Node.js/Express API uses OpenAI by default for all five planning agent results. The OpenAI key is read only by the backend from `OPENAI_API_KEY`; it is never returned to the client. `provider: "mock"` remains available only for explicitly requested local demos. OpenAI failures return an error and never silently fall back to mock content. The model defaults to `gpt-4.1-mini` and can be changed with the server-side `OPENAI_MODEL` variable.
+
+## Deploy to Render
+
+1. Create a Render **Web Service** connected to the repository and set its root directory to `skillbridge-backend`.
+2. Use Node.js 22 or newer. Build command: `npm install`; start command: `npm start`.
+3. In the Render service's **Environment** settings, add `OPENAI_API_KEY` with the API key from your OpenAI Platform project. Optionally set `OPENAI_MODEL` (default `gpt-4.1-mini`) and `FRONTEND_ORIGIN` to the deployed frontend origin.
+4. Deploy. Check `/api/health`, then submit a goal to `POST /api/goal` without a provider field. A successful response should report `provider: "openai"`; the key must never be added to frontend environment variables or source code.
+5. If the service reports quota/rate-limit errors, check the OpenAI project billing and usage limits. Invalid or missing keys are reported as errors; the service does not pretend a demo result is AI output.
+
+`gpt-4.1-mini` is a supported model, and the backend uses the official `openai` JavaScript SDK with the Responses API. See [OpenAI's official JavaScript SDK](https://github.com/openai/openai-node) and [model documentation](https://developers.openai.com/api/docs/models/gpt-4.1).
 
 ## 1. Create the project locally
 
@@ -16,23 +26,13 @@ if not exist .env copy .env.example .env
 npm run dev
 ```
 
-Use Node.js 20 or newer. The server should print that it is listening on the configured port. Visit `/api/health`; expected response includes `"ok":true` and `"persistence":"memory"`. Memory mode resets when the server restarts and is the fastest first milestone.
+Use Node.js 22 or newer. The server should print that it is listening on the configured port. Visit `/api/health`; expected response includes `"ok":true` and `"persistence":"memory"`. Memory mode resets when the server restarts and is the fastest first milestone.
 
-## Optional CodeBuddy Agent SDK
+## Local environment
 
-The SDK is optional, so mock mode can still run if the SDK package or account access is unavailable. The official SDK documentation labels it Preview. This adapter denies every tool-use request and asks for text analysis only; it does not use permission bypass, execute commands, or create/edit files.
+Set `OPENAI_API_KEY` in the backend `.env` file for live model calls. Keep `.env` out of source control and never expose the key in the frontend.
 
-1. Confirm with the hackathon organizer that your account/edition is authorized for CodeBuddy Agent SDK use and which runtime/authentication method to use. Public documentation does not establish hackathon entitlements or credits.
-2. Install the package in the backend folder with `npm install`. Install and authenticate the compatible CodeBuddy CLI if your edition's SDK setup requires it.
-3. Use an organizer-approved API key in a local environment variable, or authenticate through the official CLI. Never commit credentials or put them in frontend code. For China edition, official SDK docs specify `CODEBUDDY_INTERNET_ENVIRONMENT=internal`; other editions use different values.
-4. Set `AGENT_PROVIDER=codebuddy` in `.env`, restart the backend, and submit a goal. Alternatively pass `"provider":"codebuddy"` in an individual `/api/goal` request. The API response reports whether CodeBuddy ran or deterministic fallback was used.
-5. Selecting CodeBuddy sends the submitted goal and budget to CodeBuddy. Use non-sensitive demo data until your team approves the account and data handling.
-
-Without a configured SDK/runtime or valid account, CodeBuddy mode returns a clearly marked deterministic fallback. A real model request may take longer than the mock flow. Do not describe the backend as AI-powered unless the response reports `provider: "codebuddy"`.
-
-After authorization is confirmed, first run the text-only SDK smoke example with `node invoke-agent.mjs`. It prints a JSON object containing the SDK session ID and result. The Express adapter uses the same SDK controls, a 90-second default abort timeout (`CODEBUDDY_TIMEOUT_MS`), `maxTurns: 3`, plan permission mode, and a callback that denies tool requests. A timeout or invalid JSON result is reported as `mock_fallback` in the goal response.
-
-The official CodeBuddy Code documentation also describes a **Beta local HTTP API** (`codebuddy --serve`) with agent runs, status and event-stream routes. It is a different local-service integration and has broad file/process capabilities protected by authentication. This backend does not connect to that service. Do not disable its authentication or expose it to a network; only consider it after the organizer approves using that specific runtime.
+The model receives the submitted goal, budget, currency, product description, and target customer. It is instructed not to invent real student profiles or campaign metrics; when no actual activity data is supplied, the operations result reports zero metrics and explains that measurement data is missing.
 
 ## 2. Firebase setup (after the mock flow works)
 
@@ -58,11 +58,11 @@ $approval = @{ runId = $run.runId; actionId = $run.recommendation.actionId; appr
 Invoke-RestMethod -Method Post -Uri http://localhost:3000/api/approve -ContentType 'application/json' -Body $approval
 ```
 
-The response to goal creation contains the run ID, provider, status/results URLs, and approval action ID. With the default mock provider, all five finish deterministically in one request. If CodeBuddy is explicitly selected, only Business Analyst uses the SDK; Growth, Team Builder, Operations, and Feedback remain mock agents. Approval records the user's decision only; it does not spend money, contact students, or execute an external action.
+The response to goal creation contains the run ID, provider, status/results URLs, and approval action ID. By default, all five planning results come from OpenAI. The explicit mock provider is available for local demos. Approval records the user's decision only; it does not spend money, contact students, or execute an external action.
 
 ## API contract for Person D
 
-Base URL during local development: `http://localhost:3000` (or the port configured in `.env`). Optional request field `provider` may be `mock` or `codebuddy`; default is `AGENT_PROVIDER` in `.env`, otherwise `mock`.
+Base URL during local development: `http://localhost:3000` (or the port configured in `.env`). Optional request field `provider` may be `openai` or `mock`; default is always `openai`. Remove any stale `AGENT_PROVIDER` variable from Render; only an explicit request-level `provider: "mock"` selects demo output.
 
 ### `POST /api/goal`
 
@@ -84,8 +84,8 @@ Success `201`:
 {
   "runId": "<uuid>",
   "status": "awaiting_approval",
-  "provider": "mock",
-  "providerNote": "Deterministic mock agents used.",
+  "provider": "openai",
+  "providerNote": "All planning agents generated by OpenAI.",
   "statusUrl": "/api/status?runId=<uuid>",
   "resultsUrl": "/api/results?runId=<uuid>",
   "recommendation": {
@@ -99,7 +99,7 @@ Success `201`:
 
 ### `GET /api/status?runId=<uuid>`
 
-Returns `{ runId, status, agents, updatedAt }`. Each agent has `status` (`completed` in this mock run) and `result`.
+Returns `{ runId, status, agents, updatedAt }`. Each agent has `status: "completed"` and `result`.
 
 ### `GET /api/results?runId=<uuid>`
 
@@ -119,7 +119,7 @@ src/
   agents.js             Deterministic Business Analyst, Growth, Team Builder, Operations, Feedback
   store.js              Firestore when configured; in-memory fallback otherwise
   workbuddyAdapter.js   Manual-only WorkBuddy/Tencent Docs boundary
-  codebuddyAdapter.js   Optional CodeBuddy SDK Business Analyst; tool requests denied
+  openaiAdapter.js      OpenAI Responses API provider and result validation
   invoke-agent.mjs     Standalone text-only SDK smoke example (requires approved access)
   data/mockData.js      20 mock sales rows and 3 mock student creators
 docs/

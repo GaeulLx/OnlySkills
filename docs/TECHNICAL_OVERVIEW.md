@@ -1,6 +1,6 @@
 # OnlySkills backend: demo explanation
 
-The demo uses a Node.js/Express API. `POST /api/goal` validates a goal, creates a run, and passes the inputs through five modules: Business Analyst, Growth, Team Builder, Operations, and Feedback. The default provider uses deterministic mock logic. If CodeBuddy is explicitly selected and correctly configured, only the Business Analyst result uses the optional CodeBuddy Agent SDK; the remaining agents stay deterministic mocks. The server returns structured results with an approval-required recommendation. `GET /api/status` and `GET /api/results` let the frontend display progress and output. `POST /api/approve` records an explicit human decision; it does not execute outside actions.
+The Node.js/Express API defaults `POST /api/goal` to the official OpenAI JavaScript SDK and Responses API. All five planning results are generated from the submitted goal and returned in the established response structure. `OPENAI_API_KEY` is read only on the backend; failures are surfaced as HTTP errors with no mock fallback. The explicit `provider: "mock"` option remains for demos. The server returns structured results with an approval-required recommendation. `GET /api/status` and `GET /api/results` let the frontend display progress and output. `POST /api/approve` records an explicit human decision; it does not execute outside actions.
 
 The mock Business Analyst follows the reconciled workbook's illustrative MYR base case: 20 bottles purchased, one retained as a demo, 19 maximum saleable, MYR 12 product cost, MYR 1 packing, MYR 20 draft price, 2% plus MYR 0.10 illustrative payment fees, MYR 80 marketing, MYR 20 printing, MYR 40 pickup setup, and MYR 90 held contingency. The modeled allocation is MYR 499.50 against a MYR 500 cap. Operating contribution break-even is 24 sales, and the full-reserve cash recovery hurdle is 26 sales; both exceed the 19-unit saleable ceiling. These are planning assumptions and sell-out sensitivities, not verified quotes, purchase approval, or a demand forecast. The budget input is compared against the fixed base case; estimated affordable stock is not a sales forecast.
 
@@ -11,7 +11,7 @@ CodeBuddy SDK and Tencent Docs are separate integrations. SDK support is documen
 ## Honest demo claims
 
 - The end-to-end goal → structured results → recommendation → approval loop works locally.
-- Growth, Team Builder, Operations, Feedback, sales, and creator records are deterministic mocks, not live marketplace data.
-- CodeBuddy is active only when explicitly selected and the response reports `provider: "codebuddy"`; fallback is identified distinctly.
+- If the user supplies no campaign metrics or student profiles, generated Operations results report no measured activity and Team Builder suggests roles without inventing actual people.
+- Explicit mock mode reports `provider: "mock"`; normal operation reports `provider: "openai"`.
 - Firebase persistence is active only when `/api/health` reports `firebase`.
 - Tencent Docs documents are not created by this backend.
