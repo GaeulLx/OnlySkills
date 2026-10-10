@@ -1,0 +1,21 @@
+{
+  "name": "onlyskills-backend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "OnlySkills hackathon backend with deterministic agent workflow and optional Firebase persistence",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js"
+  },
+  "engines": { "node": ">=20" },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "firebase-admin": "^13.0.2"
+  },
+  "optionalDependencies": {
+    "@tencent-ai/agent-sdk": "^0.1.0"
+  }
+}
