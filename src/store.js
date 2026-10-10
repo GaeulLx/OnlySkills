@@ -38,6 +38,91 @@ async function updateRun(runId, updates) {
   return getRun(runId);
 }
 
+async function appendRunEvent(runId, event) {
+  const entry = { ...event, at: event.at || now() };
+  if (store.mode === 'firebase') {
+    const ref = store.db.collection('runs').doc(runId);
+    return store.db.runTransaction(async (transaction) => {
+      const snapshot = await transaction.get(ref);
+      if (!snapshot.exists) return null;
+      const run = snapshot.data();
+      const events = Array.isArray(run.events) ? run.events : [];
+      transaction.update(ref, { events: [...events, entry].slice(-100), updatedAt: now() });
+      return { ...run, events: [...events, entry].slice(-100), updatedAt: now() };
+    });
+  }
+  const run = memory.runs.get(runId);
+  if (!run) return null;
+  const updated = { ...run, events: [...(run.events || []), entry].slice(-100), updatedAt: now() };
+  memory.runs.set(runId, updated);
+  return updated;
+}
+
+async function claimNextRun(waitSeconds = 0) {
+  const waitMs = Math.max(0, Math.min(Number(waitSeconds) || 0, 20) * 1000);
+  const deadline = Date.now() + waitMs;
+  const leaseExpired = (run) => run.status === 'running' && run.claimExpiresAt && Date.parse(run.claimExpiresAt) <= Date.now();
+
+  do {
+    if (store.mode === 'firebase') {
+      const [queuedSnapshot, runningSnapshot] = await Promise.all([
+        store.db.collection('runs').where('status', '==', 'queued').limit(20).get(),
+        store.db.collection('runs').where('status', '==', 'running').limit(20).get()
+      ]);
+      const candidates = [...queuedSnapshot.docs, ...runningSnapshot.docs]
+        .map((doc) => ({ ref: doc.ref, run: doc.data() }))
+        .filter(({ run }) => run.status === 'queued' || leaseExpired(run))
+        .sort((a, b) => String(a.run.createdAt || '').localeCompare(String(b.run.createdAt || '')));
+
+      for (const candidate of candidates) {
+        const claimed = await store.db.runTransaction(async (transaction) => {
+          const current = await transaction.get(candidate.ref);
+          if (!current.exists) return null;
+          const run = current.data();
+          if (run.status !== 'queued' && !leaseExpired(run)) return null;
+          const timestamp = now();
+          const events = [...(run.events || []), { step: 'WorkBuddy picked up the goal', detail: 'The WorkBuddy worker claimed this run.', at: timestamp }].slice(-100);
+          const claimExpiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString();
+          transaction.update(candidate.ref, {
+            status: 'running',
+            provider: 'workbuddy_mcp',
+            claimedAt: timestamp,
+            claimExpiresAt,
+            updatedAt: timestamp,
+            events
+          });
+          return { ...run, status: 'running', provider: 'workbuddy_mcp', claimedAt: timestamp, claimExpiresAt, updatedAt: timestamp, events };
+        });
+        if (claimed) return claimed;
+      }
+    } else {
+      const candidate = [...memory.runs.values()]
+        .filter((run) => run.status === 'queued' || leaseExpired(run))
+        .sort((a, b) => String(a.createdAt || '').localeCompare(String(b.createdAt || '')))[0];
+      if (candidate) {
+        const timestamp = now();
+        const claimExpiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString();
+        const claimed = {
+          ...candidate,
+          status: 'running',
+          provider: 'workbuddy_mcp',
+          claimedAt: timestamp,
+          claimExpiresAt,
+          updatedAt: timestamp,
+          events: [...(candidate.events || []), { step: 'WorkBuddy picked up the goal', detail: 'The WorkBuddy worker claimed this run.', at: timestamp }].slice(-100)
+        };
+        memory.runs.set(candidate.runId, claimed);
+        return claimed;
+      }
+    }
+
+    if (Date.now() >= deadline) break;
+    await new Promise((resolve) => setTimeout(resolve, Math.min(1000, deadline - Date.now())));
+  } while (Date.now() <= deadline);
+
+  return null;
+}
+
 async function saveAction(action) {
   const record = { ...action, actionId: action.actionId || randomUUID(), createdAt: now() };
   if (store.mode === 'firebase') await store.db.collection('actions').doc(record.actionId).set(record);
@@ -45,4 +130,4 @@ async function saveAction(action) {
   return record;
 }
 
-module.exports = { store, createRun, getRun, updateRun, saveAction };
+module.exports = { store, createRun, getRun, updateRun, appendRunEvent, claimNextRun, saveAction };

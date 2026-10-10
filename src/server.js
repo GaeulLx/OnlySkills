@@ -27,6 +27,66 @@ app.get('/api/health', (_req, res) => res.json({
   revision: process.env.RENDER_GIT_COMMIT || process.env.SOURCE_VERSION || null
 }));
 
+// Website-to-WorkBuddy queue. WorkBuddy Desktop claims queued runs over MCP.
+app.post('/api/chat', async (req, res, next) => {
+  try {
+    const { message, budget, currency } = req.body || {};
+    if (typeof message !== 'string' || !message.trim()) return res.status(400).json({ error: 'message is required and must be a non-empty string' });
+    if (message.trim().length > 2000) return res.status(400).json({ error: 'message must be 2000 characters or fewer' });
+    if (budget !== undefined && (!Number.isFinite(Number(budget)) || Number(budget) < 0)) return res.status(400).json({ error: 'budget must be a non-negative number' });
+
+    const runId = randomUUID();
+    const goal = message.trim();
+    const input = { goal, budget: budget === undefined ? 500 : Number(budget), currency: typeof currency === 'string' && currency.trim() ? currency.trim().toUpperCase() : 'MYR' };
+    await createRun({
+      runId,
+      goal,
+      input,
+      status: 'queued',
+      provider: 'workbuddy_mcp',
+      providerNote: 'Queued for a WorkBuddy Desktop worker connected to the OnlySkills MCP server.',
+      events: [{ step: 'Goal queued', detail: 'OnlySkills saved your goal and is waiting for the WorkBuddy worker.', at: new Date().toISOString() }],
+      results: null,
+      recommendation: null,
+      artifacts: [],
+      validation: null
+    });
+
+    return res.status(202).json({
+      runId,
+      status: 'queued',
+      message: 'Goal queued for WorkBuddy.',
+      statusUrl: `/api/runs/${runId}`,
+      resultsUrl: `/api/results?runId=${runId}`
+    });
+  } catch (error) { return next(error); }
+});
+
+app.get('/api/runs/:runId', async (req, res, next) => {
+  try {
+    const run = await getRun(req.params.runId);
+    if (!run) return res.status(404).json({ error: 'run not found' });
+    const result = run.results ? {
+      ...run.results,
+      recommendation: run.recommendation || run.results.feedback || null,
+      artifacts: run.artifacts || [],
+      validation: run.validation || null
+    } : null;
+    return res.json({
+      runId: run.runId,
+      goal: run.goal,
+      status: run.status,
+      events: run.events || [],
+      result,
+      recommendation: run.recommendation || null,
+      artifacts: run.artifacts || [],
+      validation: run.validation || null,
+      error: run.error || null,
+      updatedAt: run.updatedAt
+    });
+  } catch (error) { return next(error); }
+});
+
 app.post('/api/goal', async (req, res, next) => {
   try {
     const { goal, budget, currency, productDescription, targetCustomer, provider } = req.body || {};

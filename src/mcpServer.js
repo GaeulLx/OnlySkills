@@ -4,7 +4,7 @@ const { StreamableHTTPServerTransport } = require('@modelcontextprotocol/sdk/ser
 const { z } = require('zod');
 const { creators, sales } = require('./data/mockData');
 const { businessAnalyst, operations } = require('./agents');
-const { createRun, getRun, updateRun, saveAction } = require('./store');
+const { createRun, getRun, updateRun, appendRunEvent, claimNextRun, saveAction } = require('./store');
 
 const sessions = new Map();
 const MAX_SESSIONS = 100;
@@ -76,6 +76,7 @@ function buildMcpServer() {
       'You are the execution agent for OnlySkills. Decompose each user goal into a plan and run the steps autonomously.',
       'Use WorkBuddy native specialist-agent or parallel-task capabilities for independent Business Analyst, Growth, Team Builder, and Operations work when available; reconcile their results before Feedback and final validation.',
       'Call get_onlyskills_context and calculate_business_case in parallel because they are independent.',
+      'When acting as the pre-started website queue worker, repeatedly call claim_next_run until it returns a goal. For each claimed goal, use its runId in update_run_progress and validate_and_save_workflow, then continue waiting only if the user asked you to remain as a worker. For a normal one-goal task, do not poll the queue.',
       'Use the summarized Operations KPIs returned from the server; the underlying sample is 20 synthetic sales rows.',
       'Use calculate_business_case for the authoritative deterministic cost and break-even calculations.',
       'Generate the Growth, Team Builder, Operations, and Feedback deliverables yourself from the goal and context; do not describe mock data as real.',
@@ -117,10 +118,65 @@ function buildMcpServer() {
     caveat: 'Planning assumptions only; this is not a quote, demand forecast, or purchase approval.'
   }));
 
+  server.registerTool('claim_next_run', {
+    title: 'Claim a queued OnlySkills goal',
+    description: 'Claim the oldest goal submitted from the OnlySkills website. Waits up to waitSeconds for a goal, then returns available:false if the queue is empty. A claimed run must be completed with validate_and_save_workflow or marked failed with fail_run.',
+    inputSchema: {
+      waitSeconds: z.number().int().min(0).max(20).default(10).describe('How long to wait for a website goal, from 0 to 20 seconds.')
+    }
+  }, async ({ waitSeconds }) => {
+    const run = await claimNextRun(waitSeconds);
+    if (!run) return toolResult({ available: false, message: 'No website goal arrived during the wait. You may call claim_next_run again if you are acting as the waiting worker.' });
+    return toolResult({
+      available: true,
+      runId: run.runId,
+      goal: run.goal,
+      budget: run.input?.budget ?? 500,
+      currency: run.input?.currency || 'MYR',
+      status: run.status,
+      message: 'This run is now claimed by the WorkBuddy worker. Use this runId for progress, validation, and failure reporting.'
+    });
+  });
+
+  server.registerTool('update_run_progress', {
+    title: 'Report WorkBuddy workflow progress',
+    description: 'Append an actual WorkBuddy progress update to a website-submitted OnlySkills run. The run must already be claimed and running.',
+    inputSchema: {
+      runId: z.string().uuid(),
+      step: z.string().min(1).max(100),
+      detail: z.string().min(1).max(1000)
+    }
+  }, async ({ runId, step, detail }) => {
+    const run = await getRun(runId);
+    if (!run) return toolError('Run not found.');
+    if (run.status !== 'running' || run.provider !== 'workbuddy_mcp') return toolError('Progress can only be reported for a running website-queued WorkBuddy run.');
+    await updateRun(runId, { claimExpiresAt: new Date(Date.now() + 10 * 60 * 1000).toISOString() });
+    const updated = await appendRunEvent(runId, { step: step.trim(), detail: detail.trim(), source: 'workbuddy' });
+    if (!updated) return toolError('Run not found.');
+    return toolResult({ runId, status: updated.status, event: updated.events.at(-1) });
+  });
+
+  server.registerTool('fail_run', {
+    title: 'Mark a WorkBuddy run as failed',
+    description: 'Mark a claimed website-submitted run as failed and provide a brief explanation if WorkBuddy cannot complete it.',
+    inputSchema: {
+      runId: z.string().uuid(),
+      error: z.string().min(1).max(500)
+    }
+  }, async ({ runId, error }) => {
+    const run = await getRun(runId);
+    if (!run) return toolError('Run not found.');
+    if (run.status !== 'running' || run.provider !== 'workbuddy_mcp') return toolError('Only a running website-queued WorkBuddy run can be marked failed.');
+    await updateRun(runId, { status: 'failed', error: error.trim() });
+    const updated = await appendRunEvent(runId, { step: 'WorkBuddy could not complete the goal', detail: error.trim(), source: 'workbuddy' });
+    return toolResult({ runId, status: 'failed', error: error.trim(), updatedAt: updated?.updatedAt });
+  });
+
   server.registerTool('validate_and_save_workflow', {
     title: 'Validate and save goal workflow',
     description: 'Validate all five WorkBuddy-generated agent results against the business model and synthetic Operations data, then persist the results in OnlySkills. Provide references for the cost spreadsheet and marketing document created in WorkBuddy.',
     inputSchema: {
+      runId: z.string().uuid().optional().describe('Include this when saving results for a goal claimed from the OnlySkills website.'),
       goal: z.string().min(1).max(2000),
       budget: z.number().nonnegative().default(500),
       currency: z.string().default('MYR'),
@@ -137,7 +193,13 @@ function buildMcpServer() {
         location: z.string().min(1).max(1000)
       })).min(2).max(10)
     }
-  }, async ({ goal, budget, currency, results, artifacts }) => {
+  }, async ({ runId, goal, budget, currency, results, artifacts }) => {
+    const queuedRun = runId ? await getRun(runId) : null;
+    if (runId && !queuedRun) return toolError('The specified website run was not found.');
+    if (queuedRun && (queuedRun.status !== 'running' || queuedRun.provider !== 'workbuddy_mcp')) {
+      return toolError('Results can only be saved to a running website-queued WorkBuddy run.');
+    }
+
     const validation = checkWorkflowResults({ budget, currency, results });
     const requiredKinds = new Set(artifacts.map((artifact) => artifact.kind));
     if (!requiredKinds.has('cost_spreadsheet') || !requiredKinds.has('marketing_document')) {
@@ -146,31 +208,40 @@ function buildMcpServer() {
     }
     if (!validation.valid) return toolError(JSON.stringify({ valid: false, problems: validation.problems }));
 
-    const runId = randomUUID();
-    const actionId = `onlyskills-recommendation-${runId}`;
+    const savedRunId = runId || randomUUID();
+    const actionId = `onlyskills-recommendation-${savedRunId}`;
     const recommendation = { ...results.feedback, actionId };
     const savedResults = { ...results, feedback: recommendation };
     const run = {
-      runId,
-      goal: goal.trim(),
+      runId: savedRunId,
+      goal: queuedRun?.goal || goal.trim(),
       status: 'awaiting_approval',
       provider: 'workbuddy_mcp',
-      providerNote: 'WorkBuddy generated and orchestrated the agent outputs through MCP; the backend validated the business figures and mock Operations metrics.',
-      input: { goal: goal.trim(), budget, currency },
+      providerNote: runId
+        ? 'The user submitted this goal on the OnlySkills website. WorkBuddy Desktop claimed it through MCP, generated the agent outputs, and the backend validated the business figures and mock Operations metrics.'
+        : 'WorkBuddy generated and orchestrated the agent outputs through MCP; the backend validated the business figures and mock Operations metrics.',
+      input: queuedRun?.input || { goal: goal.trim(), budget, currency },
       agents: Object.fromEntries(Object.entries(savedResults).map(([name, result]) => [name, { status: 'completed', result }])),
       results: savedResults,
       recommendation,
       artifacts,
+      events: [...(queuedRun?.events || []), {
+        step: 'Results validated and saved',
+        detail: 'WorkBuddy submitted all five agent results and both artifact references; OnlySkills validation passed.',
+        source: 'workbuddy',
+        at: new Date().toISOString()
+      }].slice(-100),
       validation: {
         valid: true,
         checked: ['budget allocation', 'saleable stock', 'break-even figures', 'mock sales KPIs', 'growth output structure', 'team output structure', 'approval gate'],
         artifacts: 'References supplied by WorkBuddy; file contents and existence are not independently inspected by the backend.'
       }
     };
-    await createRun(run);
-    await saveAction({ runId, actionId, type: 'recommendation', status: 'pending', recommendation });
+    if (queuedRun) await updateRun(savedRunId, run);
+    else await createRun(run);
+    await saveAction({ runId: savedRunId, actionId, type: 'recommendation', status: 'pending', recommendation });
     return toolResult({
-      runId,
+      runId: savedRunId,
       status: run.status,
       actionId,
       validation: run.validation,
