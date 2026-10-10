@@ -75,10 +75,11 @@ function buildMcpServer() {
     instructions: [
       'You are the execution agent for OnlySkills. Decompose each user goal into a plan and run the steps autonomously.',
       'Use WorkBuddy native specialist-agent or parallel-task capabilities for independent Business Analyst, Growth, Team Builder, and Operations work when available; reconcile their results before Feedback and final validation.',
-      'Use get_onlyskills_context to retrieve the clearly labeled mock sales and student profile data.',
+      'Call get_onlyskills_context and calculate_business_case in parallel because they are independent.',
+      'Use the summarized Operations KPIs returned from the server; the underlying sample is 20 synthetic sales rows.',
       'Use calculate_business_case for the authoritative deterministic cost and break-even calculations.',
       'Generate the Growth, Team Builder, Operations, and Feedback deliverables yourself from the goal and context; do not describe mock data as real.',
-      'Create a usable cost spreadsheet and marketing plan document with WorkBuddy native document tools before saving results.',
+      'Create concise but usable artifacts with WorkBuddy native document tools: one cost-model spreadsheet sheet and one-page marketing plan.',
       'If a tool fails, inspect the error and retry once when safe; if it still fails, disclose the blocker and do not claim success. Call validate_and_save_workflow only after all five agent outputs and both artifact references are ready. Fix validation errors and retry.',
       'Approval is a separate user decision. Only call record_recommendation_decision after the user explicitly approves or rejects.'
     ].join(' ')
@@ -86,14 +87,18 @@ function buildMcpServer() {
 
   server.registerTool('get_onlyskills_context', {
     title: 'Get OnlySkills demo context',
-    description: 'Read the 20-row mock sales dataset and three mock student creator profiles. These are synthetic demo records, not live campus data.',
+    description: 'Read the summarized KPIs calculated from 20 mock sales rows and three mock student creator profiles. These are synthetic demo records, not live campus data.',
     inputSchema: {}
   }, async () => toolResult({
     dataType: 'synthetic_demo_data',
-    sales,
+    operationsMetrics: {
+      ...operations(),
+      refundedRows: sales.filter((order) => order.status === 'refunded').length,
+      dataMethod: 'KPIs calculated server-side from all 20 synthetic sales rows.'
+    },
     creators,
     limitations: [
-      'Sales rows and creator profiles are mock data.',
+      'Sales KPIs and creator profiles are derived from mock data.',
       'Ask the user for goal-specific details if the submitted goal does not provide them.',
       'Do not claim that a creator has agreed to participate or that sales are forecast.'
     ]
