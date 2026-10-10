@@ -24,7 +24,7 @@ app.use((req, res, next) => {
 app.get('/api/health', (_req, res) => res.json({
   ok: true,
   persistence: store.mode,
-  aiProvider: 'openai',
+  aiProvider: process.env.AGENT_PROVIDER || 'codebuddy',
   openaiKeyConfigured: Boolean(process.env.OPENAI_API_KEY?.trim()),
   revision: process.env.RENDER_GIT_COMMIT || process.env.SOURCE_VERSION || null
 }));
@@ -34,9 +34,7 @@ app.post('/api/goal', async (req, res, next) => {
     const { goal, budget, currency, productDescription, targetCustomer, provider } = req.body || {};
     if (typeof goal !== 'string' || !goal.trim()) return res.status(400).json({ error: 'goal is required and must be a non-empty string' });
     if (budget !== undefined && (!Number.isFinite(Number(budget)) || Number(budget) < 0)) return res.status(400).json({ error: 'budget must be a non-negative number' });
-    // Only a request-level opt-in may select demo data. Ignore any stale AGENT_PROVIDER=mock
-    // left in Render's environment from the previous mock-first deployment.
-    const requestedProvider = provider || 'openai';
+    const requestedProvider = provider || process.env.AGENT_PROVIDER || 'codebuddy';
     if (!['mock', 'openai', 'codebuddy'].includes(requestedProvider)) return res.status(400).json({ error: 'provider must be openai, codebuddy, or mock' });
     const keyConfigured = Boolean(process.env.OPENAI_API_KEY?.trim());
     console.info(JSON.stringify({ event: 'goal.provider_selected', requestId: req.requestId, provider: requestedProvider, openAIKeyConfigured: keyConfigured }));

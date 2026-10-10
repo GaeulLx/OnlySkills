@@ -18,6 +18,9 @@ try {
       abortController: controller,
       permissionMode: 'plan',
       maxTurns: 3,
+      // The SDK otherwise hides the local CLI's stderr, which is needed to
+      // diagnose a child-process exit such as "Transport closed".
+      stderr: (data) => process.stderr.write(`[CodeBuddy CLI] ${data}`),
       ...(Object.keys(env).length ? { env } : {}),
       ...(process.env.CODEBUDDY_CODE_PATH ? { pathToCodebuddyCode: process.env.CODEBUDDY_CODE_PATH } : {}),
       canUseTool: async () => ({ behavior: 'deny', message: 'This demonstration permits no permission-requiring actions.' })

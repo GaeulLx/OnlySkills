@@ -1,14 +1,16 @@
 # OnlySkills backend
 
-This Node.js/Express API uses OpenAI by default for all five planning agent results. The OpenAI key is read only by the backend from `OPENAI_API_KEY`; it is never returned to the client. `provider: "mock"` remains available only for explicitly requested local demos. OpenAI failures return an error and never silently fall back to mock content. The model defaults to `gpt-4.1-mini` and can be changed with the server-side `OPENAI_MODEL` variable.
+This Node.js/Express API uses the CodeBuddy Agent SDK by default for the Business Analyst result. Growth, Team Builder, Operations, and Feedback use deterministic agents. CodeBuddy tool requests are denied; the prompt asks for structured analysis only. If CodeBuddy fails, the API clearly reports `mock_fallback`. OpenAI remains an optional provider that can generate all five agent results; deterministic mock mode is also available.
 
 ## Deploy to Render
 
-1. Create a Render **Web Service** connected to the repository and set its root directory to `skillbridge-backend`.
+1. Connect the GitHub repository as a Render **Web Service**. This repository's root is the backend project itself, so leave **Root Directory** blank (do not enter `skillbridge-backend`).
 2. Use Node.js 22 or newer. Build command: `npm install`; start command: `npm start`.
-3. In the Render service's **Environment** settings, add `OPENAI_API_KEY` with the API key from your OpenAI Platform project. Optionally set `OPENAI_MODEL` (default `gpt-4.1-mini`) and `FRONTEND_ORIGIN` to the deployed frontend origin.
-4. Deploy. Check `/api/health`, then submit a goal to `POST /api/goal` without a provider field. A successful response should report `provider: "openai"`; the key must never be added to frontend environment variables or source code.
-5. If the service reports quota/rate-limit errors, check the OpenAI project billing and usage limits. Invalid or missing keys are reported as errors; the service does not pretend a demo result is AI output.
+3. In the Render service's **Environment** settings, set `AGENT_PROVIDER` to `codebuddy` and `FRONTEND_ORIGIN` to `https://onlyskill-student-ventures.li895.chatgpt.site`. Add `CODEBUDDY_API_KEY` as a secret using an API key from the correct CodeBuddy edition. Do not copy a desktop/CLI login or any credential into source control or frontend settings. For the international edition, leave `CODEBUDDY_INTERNET_ENVIRONMENT` unset; China edition uses `internal`, and iOA uses `ioa`.
+4. Save and deploy. Check `/api/health`, then submit a goal to `POST /api/goal` without a provider field. Successful CodeBuddy output reports `provider: "codebuddy"`; `mock_fallback` means the server could not authenticate, run the SDK, or validate its response.
+5. Open Render logs if the response reports `mock_fallback`. The local CodeBuddy login is stored on your computer and does not transfer to Render. Never paste an API key into chat, frontend settings, or source code.
+
+OpenAI remains available by setting `provider: "openai"` on a goal request and configuring the server-side `OPENAI_API_KEY`; the optional model defaults to `gpt-4.1-mini` via `OPENAI_MODEL`.
 
 `gpt-4.1-mini` is a supported model, and the backend uses the official `openai` JavaScript SDK with the Responses API. See [OpenAI's official JavaScript SDK](https://github.com/openai/openai-node) and [model documentation](https://developers.openai.com/api/docs/models/gpt-4.1).
 
@@ -30,7 +32,7 @@ Use Node.js 22 or newer. The server should print that it is listening on the con
 
 ## Local environment
 
-Set `OPENAI_API_KEY` in the backend `.env` file for live model calls. Keep `.env` out of source control and never expose the key in the frontend.
+Set `AGENT_PROVIDER=codebuddy` in `.env` for the CodeBuddy default. For API-key authentication, also set `CODEBUDDY_API_KEY` and the edition-specific `CODEBUDDY_INTERNET_ENVIRONMENT` when required. Keep `.env` out of source control and never expose credentials in the frontend.
 
 The model receives the submitted goal, budget, currency, product description, and target customer. It is instructed not to invent real student profiles or campaign metrics; when no actual activity data is supplied, the operations result reports zero metrics and explains that measurement data is missing.
 
@@ -58,11 +60,11 @@ $approval = @{ runId = $run.runId; actionId = $run.recommendation.actionId; appr
 Invoke-RestMethod -Method Post -Uri http://localhost:3000/api/approve -ContentType 'application/json' -Body $approval
 ```
 
-The response to goal creation contains the run ID, provider, status/results URLs, and approval action ID. By default, all five planning results come from OpenAI. The explicit mock provider is available for local demos. Approval records the user's decision only; it does not spend money, contact students, or execute an external action.
+The response to goal creation contains the run ID, provider, status/results URLs, and approval action ID. By default, CodeBuddy generates the Business Analyst result; the other four use deterministic logic. The explicit OpenAI provider can generate all five, and the mock provider is available for local demos. Approval records the user's decision only; it does not spend money, contact students, or execute an external action.
 
 ## API contract for Person D
 
-Base URL during local development: `http://localhost:3000` (or the port configured in `.env`). Optional request field `provider` may be `openai` or `mock`; default is always `openai`. Remove any stale `AGENT_PROVIDER` variable from Render; only an explicit request-level `provider: "mock"` selects demo output.
+Base URL during local development: `http://localhost:3000` (or the port configured in `.env`). Optional request field `provider` may be `codebuddy`, `openai`, or `mock`; it overrides `AGENT_PROVIDER`, whose default is `codebuddy`.
 
 ### `POST /api/goal`
 
@@ -84,8 +86,8 @@ Success `201`:
 {
   "runId": "<uuid>",
   "status": "awaiting_approval",
-  "provider": "openai",
-  "providerNote": "All planning agents generated by OpenAI.",
+  "provider": "codebuddy",
+  "providerNote": "Business Analyst generated with CodeBuddy; remaining agents use deterministic mock logic.",
   "statusUrl": "/api/status?runId=<uuid>",
   "resultsUrl": "/api/results?runId=<uuid>",
   "recommendation": {
@@ -119,7 +121,8 @@ src/
   agents.js             Deterministic Business Analyst, Growth, Team Builder, Operations, Feedback
   store.js              Firestore when configured; in-memory fallback otherwise
   workbuddyAdapter.js   Manual-only WorkBuddy/Tencent Docs boundary
-  openaiAdapter.js      OpenAI Responses API provider and result validation
+  codebuddyAdapter.js   CodeBuddy Agent SDK provider and Business Analyst validation
+  openaiAdapter.js      Optional OpenAI Responses API provider and plan validation
   invoke-agent.mjs     Standalone text-only SDK smoke example (requires approved access)
   data/mockData.js      20 mock sales rows and 3 mock student creators
 docs/
