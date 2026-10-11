@@ -4,17 +4,20 @@ This branch saves the source of the separate deployed venture workspace in `webs
 
 - Public website: https://onlyskills-venture-workspace.li895.chatgpt.site/
 - Snapshot date: 2026-10-11 (Asia/Kuala_Lumpur)
-- Published site version: 8
-- Exact website source commit: `34c02324001d8fd1f4c4b2477b8d8c6b469a2a4a`
+- Published site version: 9
+- Exact website source commit: `7dae6c3c7bb89493d06e30ea80ff9b7316a7513d`
 - Backend base: https://onlyskills.onrender.com
 - Backend base override: Worker runtime variable `ONLYSKILLS_API_BASE_URL`
-- GitHub base commit: `fd9b2fa4668cbf0d97715f4b553b6912426a73b5` on `main`
+- Branch: `codex/onlyskills-site-v9-20261011`
+- GitHub base commit: `d8785f3d7ad24c253a15c9338387c63cc424ef00` on `codex/onlyskills-final-20261011`; existing backend files remain unchanged from `main` commit `fd9b2fa4668cbf0d97715f4b553b6912426a73b5`.
 
 The 50 original tracked source files are copied unchanged. This includes the Worker-served HTML/JavaScript, branding and fonts, migrations, package lockfile, tests, and notices. Build output, dependencies, browser data, live database records, receipt uploads, and credentials are not included. Test fixtures are isolated test data, not real users or AI results.
 
 ## Current flow
 
 New devices start with Profile, then AI Workspace. Successful recommendation approval opens Teammates. Matching requires one Product Creator, one Marketing member, and one Sales member, with all three accepting before activation. The app retains the interactive teammate map, role-specific tasks, group chat, shared team bookkeeping, and existing WorkBuddy result lookup. Agent result details are expandable and preserve actual returned fields. Matching scores profiles deterministically; WorkBuddy progress depends on the external worker and backend events, not simulated progress.
+
+Version 9 fixes the missing per-agent status fallback: actual returned content shows `Result received`, while absent or empty content shows `Awaiting result`. Explicit backend statuses are preserved. This does not invent execution success, change returned result fields, or alter fonts, sizes, colors, layout, or other functions.
 
 Some older acceptance documents in the source describe earlier designs; they are retained as historical source material. The startup flow above and the executable tests describe the latest update.
 

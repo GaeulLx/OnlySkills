@@ -656,6 +656,16 @@ const PAGE = String.raw`<!doctype html>
       const candidates = [value.summary,value.overview,value.headline,value.description,value.message,value.output?.summary,value.result?.summary,value.data?.summary];
       return candidates.find(candidate => typeof candidate === "string" && candidate.trim()) || "";
     }
+    function agentResultStatusText(status, value) {
+      if (status !== undefined && status !== null && (typeof status !== "string" || status.trim())) return displayApiValue(status);
+      // Result availability is observable; it is not an invented agent execution status.
+      const received = value !== undefined && value !== null && (
+        Array.isArray(value) ? value.length > 0 :
+        typeof value === "object" ? Object.keys(value).length > 0 :
+        typeof value === "string" ? value.trim().length > 0 : true
+      );
+      return received ? "Result received" : "Awaiting result";
+    }
     function renderAgentResults(containerId, entries, emptyMessage) {
       const host = $("#" + containerId);
       const signature = JSON.stringify(entries);
@@ -663,7 +673,7 @@ const PAGE = String.raw`<!doctype html>
       const expanded = new Set(Array.from(host.querySelectorAll("details[open]"), node => node.dataset.agentKey));
       const focused = host.contains(document.activeElement) ? document.activeElement.closest("details")?.dataset.agentKey : null;
       host.innerHTML = entries.map(({key,value,status}) => {
-        const statusText = status === undefined ? "Status not returned by backend" : displayApiValue(status);
+        const statusText = agentResultStatusText(status, value);
         const preview = agentResultPreview(value);
         return '<article class="agent-result"><details class="agent-result-details" data-agent-key="' + escapeHTML(key) + '"' + (expanded.has(key) ? ' open' : '') + '><summary class="agent-result-summary"><div class="agent-result-head"><h4>' + escapeHTML(AGENT_RESULT_LABELS[key] || key) + '</h4><span class="agent-status-pill">' + escapeHTML(statusText) + '</span><svg class="agent-result-chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="m3 6 5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>' + (preview ? '<dl class="agent-fields agent-result-preview"><div><dt>Preview</dt><dd>' + escapeHTML(preview) + '</dd></div></dl>' : '') + '<span class="agent-meta-label"><span class="agent-result-expand-copy">' + (value === undefined ? escapeHTML(emptyMessage) : 'View full result') + '</span><span class="agent-result-collapse-copy">Hide full result</span></span></summary><div class="agent-result-body">' + renderApiFields(value, emptyMessage) + '</div></details></article>';
       }).join("");

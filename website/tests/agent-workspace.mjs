@@ -89,7 +89,7 @@ vm.runInContext('renderAgentResults("agent-results",entries,"No result returned 
 const host=hosts["#agent-results"];
 assert.equal(host.details.length,2);
 assert.ok(host.details.every(d=>!d.open),"results start compact without discarding fields");
-for(const value of ["Business analyst","completed","A returned summary &lt;not markup&gt;","segment","Campus","unusualField","Keep this exact field","false","null","No result returned yet.","Status not returned by backend"])assert.ok(host.html.includes(value),value);
+for(const value of ["Business analyst","completed","A returned summary &lt;not markup&gt;","segment","Campus","unusualField","Keep this exact field","false","null","No result returned yet.","Awaiting result"])assert.ok(host.html.includes(value),value);
 assert.doesNotMatch(host.html,/<not markup>/);
 host.details[0].open=true;
 document.activeElement={host,closest:()=>host.details[0]};
@@ -102,8 +102,48 @@ assert.equal(focused,"businessAnalyst","changed results restore disclosure keybo
 vm.runInContext('renderAgentResults("workbuddy-agent-results",entries,"No result returned yet.")',context);
 assert.equal(hosts["#workbuddy-agent-results"].writes,1,"lookup has its own disclosure state");
 assert.equal(hosts["#workbuddy-agent-results"].details[0].open,false);
+
+// The deployed WorkBuddy results have actual fields but no per-agent status.
+// Availability labels must not claim that a missing execution status is "completed".
+for(const value of [undefined,null,"","   ",[],{}]){
+  context.resultValue=value;
+  assert.equal(vm.runInContext('agentResultStatusText(undefined,resultValue)',context),"Awaiting result");
+}
+for(const value of [{summary:"Returned plan"},["Returned task"],"Returned plan",0,false]){
+  context.resultValue=value;
+  assert.equal(vm.runInContext('agentResultStatusText(undefined,resultValue)',context),"Result received");
+}
+context.resultValue={summary:"Returned plan"};
+for(const status of [undefined,null,"","   "]){
+  context.resultStatus=status;
+  assert.equal(vm.runInContext('agentResultStatusText(resultStatus,resultValue)',context),"Result received");
+}
+for(const status of ["completed","running","failed","cancelled","custom_backend_status"]){
+  context.resultStatus=status;
+  assert.equal(vm.runInContext('agentResultStatusText(resultStatus,resultValue)',context),status,"explicit backend statuses are preserved");
+}
+context.entries=[
+  {key:"businessAnalyst",value:{budgetCurrency:"MYR",withinBudget:false}},
+  {key:"growth",value:{contentCalendar:["QA-only task"]}},
+  {key:"teamBuilder",value:{identifiedNeeds:["Sales"]}},
+  {key:"operations",value:{orders:0}},
+  {key:"feedback",value:{requiresApproval:true,actionId:"qa-only-action"}}
+];
+for(const containerId of ["agent-results","workbuddy-agent-results"]){
+  context.containerId=containerId;
+  vm.runInContext('renderAgentResults(containerId,entries,"No result returned yet.")',context);
+  const rendered=hosts["#"+containerId].html;
+  assert.equal((rendered.match(/>Result received<\/span>/g)||[]).length,5,"all returned agents show result availability");
+  assert.doesNotMatch(rendered,/Status not returned by backend|>completed<\/span>/);
+  assert.ok(rendered.includes("withinBudget")&&rendered.includes("false")&&rendered.includes("orders")&&rendered.includes(">0</span>"),"actual result fields remain unchanged");
+}
+context.entries[4].value=undefined;
+vm.runInContext('renderAgentResults("agent-results",entries,"No result returned yet.")',context);
+assert.equal((host.html.match(/>Result received<\/span>/g)||[]).length,4);
+assert.equal((host.html.match(/>Awaiting result<\/span>/g)||[]).length,1,"a missing agent is not shown as received");
+assert.doesNotMatch(source,/Status not returned by backend/);
 assert.ok(source.includes('renderAgentResults("agent-results", AGENT_KEYS.map'));
 assert.ok(source.includes('renderAgentResults("workbuddy-agent-results", AGENT_KEYS.map'));
 assert.match(source,/const AGENT_KEYS = \["businessAnalyst", "growth", "teamBuilder", "operations", "feedback"\]/,"all existing agents are retained");
 
-console.log("Approval navigation, failure/reject/stale states, compact actual-result rendering and disclosure preservation passed.");
+console.log("Approval navigation, failure/reject/stale states, actual-result availability statuses and disclosure preservation passed.");
